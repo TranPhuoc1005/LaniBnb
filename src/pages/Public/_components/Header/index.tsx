@@ -221,7 +221,7 @@ export default function Header() {
                                 {isUserDropdownOpen && (
                                     <div className="absolute top-full right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
                                         <Link
-                                            to="/profile/"
+                                            to="/info/"
                                             onClick={() => setIsUserDropdownOpen(false)}
                                             className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gray-100 transition-colors"
                                         >
@@ -349,7 +349,7 @@ export default function Header() {
                                         </div>
                                         
                                         <Link
-                                            to="/profile/"
+                                            to="/info/"
                                             onClick={() => setIsMenuOpen(false)}
                                             className="flex items-center space-x-4 w-full text-left p-4 rounded-lg transition-all duration-200 mb-0 text-gray-300 hover:text-white hover:bg-gray-800"
                                         >
