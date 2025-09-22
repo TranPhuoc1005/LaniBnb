@@ -28,7 +28,7 @@ export const routes: RouteObject[] = [
         element: withSuspense(AboutPage)
       },
       {
-        path: '/bookings',
+        path: '/info',
         element: withSuspense(UserProfilePage)
       },
       {
