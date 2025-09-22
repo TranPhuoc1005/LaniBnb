@@ -28,6 +28,8 @@ export const useLocationStore = create<LocationStore>((set, get) => ({
     clearError: () => set({ error: null }),
 
     fetchLocations: async () => {
+        const { locations, loading } = get();
+        if(loading || locations.length > 0) return;
         set({ loading: true, error: null });
         try {
             const data = await getLocationsApi();

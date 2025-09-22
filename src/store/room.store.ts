@@ -47,6 +47,8 @@ export const useRoomStore = create<RoomStore>((set, get) => ({
     },
 
     fetchRoomsWithLocation: async () => {
+        const { roomsWithLocation, loading } = get();
+        if(loading || roomsWithLocation.length > 0) return;
         set({ loading: true, error: null });
         try {
             const rooms = await getRoomsApi();

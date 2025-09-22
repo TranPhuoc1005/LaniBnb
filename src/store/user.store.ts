@@ -58,6 +58,8 @@ export const useUserStore = create<UserStore>((set, get) => ({
     },
 
     fetchUserById: async (userId: number) => {
+        const { currentUser, loading } = get();
+        if(loading || (currentUser && currentUser.id === userId)) return;
         set({ loading: true, error: null });
         try {
             const user = await getUserByIdApi(userId);

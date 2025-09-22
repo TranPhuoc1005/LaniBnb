@@ -1,12 +1,5 @@
-import type {
-    Booking,
-    CreateBookingRequest,
-} from "@/interfaces/booking.interface";
-import {
-    createBookingApi,
-    deleteBookingApi,
-    getBookingsByUserApi,
-} from "@/services/booking.api";
+import type { Booking, CreateBookingRequest,} from "@/interfaces/booking.interface";
+import { createBookingApi, deleteBookingApi, getBookingsByUserApi } from "@/services/booking.api";
 import { getRoomDetailApi } from "@/services/room.api";
 import { create } from "zustand";
 
@@ -16,15 +9,20 @@ type BookingStore = {
     error: string | null;
     isCreatingBooking: boolean;
     createBookingSuccess: boolean;
+    lastFetchedUserId: number | null;
+    lastFetchTime: number | null; // Thêm timestamp để track thời gian fetch
+    cacheValidityMs: number; // Thời gian cache hợp lệ (mặc định 5 phút)
 
     setBookings: (booking: Booking[]) => void;
     setLoading: (loading: boolean) => void;
     setError: (error: string | null) => void;
     setCreateBookingSuccess: (success: boolean) => void;
     clearError: () => void;
+    clearBookings: () => void;
+    invalidateCache: () => void;
 
     fetchUserBookings: (userId: number) => Promise<void>;
-    fetchBookingsWithRoomDetails: (userId: number) => Promise<void>;
+    fetchBookingsWithRoomDetails: (userId: number, forceRefresh?: boolean) => Promise<void>;
 
     createBooking: (bookingData: CreateBookingRequest) => Promise<boolean>;
     deleteBooking: (bookingId: number) => Promise<boolean>;
@@ -36,6 +34,9 @@ export const useBookingStore = create<BookingStore>((set, get) => ({
     error: null,
     isCreatingBooking: false,
     createBookingSuccess: false,
+    lastFetchedUserId: null,
+    lastFetchTime: null,
+    cacheValidityMs: 5 * 60 * 1000, // 5 phút
 
     setBookings: (bookings) => set({ bookings }),
     setLoading: (loading) => set({ loading }),
@@ -43,6 +44,15 @@ export const useBookingStore = create<BookingStore>((set, get) => ({
     setCreateBookingSuccess: (success) =>
         set({ createBookingSuccess: success }),
     clearError: () => set({ error: null, createBookingSuccess: false }),
+    clearBookings: () => set({ 
+        bookings: [], 
+        lastFetchedUserId: null, 
+        lastFetchTime: null 
+    }),
+    invalidateCache: () => set({ 
+        lastFetchTime: null,
+        error: null 
+    }),
 
     fetchUserBookings: async (userId: number) => {
         set({ loading: true, error: null });
@@ -55,9 +65,11 @@ export const useBookingStore = create<BookingStore>((set, get) => ({
                     status: "confirmed" as const,
                 })),
                 loading: false,
+                lastFetchedUserId: userId,
+                lastFetchTime: Date.now(),
             });
         } catch (error) {
-            console.error("Error fetching bookings:", error);
+            console.error(error);
             set({
                 error: "Không thể tải danh sách đặt phòng",
                 loading: false,
@@ -65,20 +77,41 @@ export const useBookingStore = create<BookingStore>((set, get) => ({
         }
     },
 
-    fetchBookingsWithRoomDetails: async (userId: number) => {
+    fetchBookingsWithRoomDetails: async (userId: number, forceRefresh = false) => {
+        const {  bookings, loading, lastFetchedUserId, lastFetchTime, cacheValidityMs, error } = get();
+        
+        if (loading) {
+            return;
+        }
+
+        const now = Date.now();
+        const isCacheValid = lastFetchTime && (now - lastFetchTime < cacheValidityMs);
+        const isSameUser = lastFetchedUserId === userId;
+        const hasValidData = bookings.length > 0;
+        const hasNoError = !error;
+
+        const shouldUseCache = !forceRefresh && isSameUser && hasValidData && hasNoError && isCacheValid;
+        if (shouldUseCache) {
+            return;
+        }
+
         set({ loading: true, error: null });
         try {
             const data = await getBookingsByUserApi(userId);
+            
             const bookingsWithRooms = await Promise.all(
                 data.map(async (booking) => {
                     try {
+                        console.log("Fetching room details for room:", booking.maPhong);
                         const room = await getRoomDetailApi(booking.maPhong);
+                        console.log("Successfully fetched room details for room:", booking.maPhong);
                         return {
                             ...booking,
                             room,
                             status: "confirmed" as const,
                         };
                     } catch (error) {
+                        console.error("Error fetching room details for room:", booking.maPhong, error);
                         return {
                             ...booking,
                             status: "confirmed" as const,
@@ -87,11 +120,15 @@ export const useBookingStore = create<BookingStore>((set, get) => ({
                     }
                 })
             );
+            
             set({
                 bookings: bookingsWithRooms,
                 loading: false,
+                lastFetchedUserId: userId,
+                lastFetchTime: Date.now(),
             });
         } catch (error) {
+            console.error(error);
             set({
                 error: "Không thể tải danh sách đặt phòng với thông tin phòng!",
                 loading: false,
@@ -107,7 +144,6 @@ export const useBookingStore = create<BookingStore>((set, get) => ({
         });
         try {
             const newBooking = await createBookingApi(bookingData);
-
             let room: any = null;
             try {
                 room = await getRoomDetailApi(newBooking.maPhong);
@@ -126,10 +162,11 @@ export const useBookingStore = create<BookingStore>((set, get) => ({
                 bookings: [bookingWithRoom, ...currentBookings],
                 isCreatingBooking: false,
                 createBookingSuccess: true,
+                lastFetchTime: Date.now(),
             });
             return true;
         } catch (error: any) {
-            console.error("Error creating booking:", error);
+            console.error(error);
             let errorMessage = "Không thể đặt phòng. Vui lòng thử lại sau.";
 
             if (error.response?.status === 400) {
@@ -159,6 +196,7 @@ export const useBookingStore = create<BookingStore>((set, get) => ({
             set({
                 bookings: updatedBookings,
                 loading: false,
+                lastFetchTime: Date.now(),
             });
             return true;
         } catch (error: any) {

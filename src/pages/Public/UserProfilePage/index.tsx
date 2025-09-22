@@ -31,17 +31,17 @@ import type { User as UserType } from "@/interfaces/users.interface";
 
 export default function UserProfilePage() {
     const navigate = useNavigate();
-    
+
     // Booking store
-    const { 
-        bookings, 
-        loading: bookingLoading, 
-        error: bookingError, 
+    const {
+        bookings,
+        loading: bookingLoading,
+        error: bookingError,
         fetchBookingsWithRoomDetails,
         deleteBooking,
-        clearError: clearBookingError 
+        clearError: clearBookingError,
     } = useBookingStore();
-    
+
     // User store
     const {
         currentUser,
@@ -54,22 +54,26 @@ export default function UserProfilePage() {
         updateUserInfo,
         uploadAvatar,
         clearError: clearUserError,
-        loadUserFromStorage
+        loadUserFromStorage,
     } = useUserStore();
-    
+
     // Auth store
     const { user, isAuthenticated } = userAuthStore();
-    
-    const [activeTab, setActiveTab] = useState<"profile" | "bookings">("profile");
+
+    const [activeTab, setActiveTab] = useState<"profile" | "bookings">(
+        "profile"
+    );
     const [filter, setFilter] = useState<"all" | "upcoming" | "past">("all");
     const [showDeleteModal, setShowDeleteModal] = useState<number | null>(null);
-    const [deletingBookingId, setDeletingBookingId] = useState<number | null>(null);
-    
+    const [deletingBookingId, setDeletingBookingId] = useState<number | null>(
+        null
+    );
+
     const [isEditing, setIsEditing] = useState(false);
     const [editingUser, setEditingUser] = useState<Partial<UserType>>({});
     const [avatarFile, setAvatarFile] = useState<File | null>(null);
     const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
-    
+
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
@@ -80,14 +84,27 @@ export default function UserProfilePage() {
             } else {
                 setCurrentUser(user);
             }
-            fetchBookingsWithRoomDetails(user.id);
+            fetchBookingsWithRoomDetails(user.id, true);
         }
-    }, [isAuthenticated, user, fetchBookingsWithRoomDetails, setCurrentUser, loadUserFromStorage]);
+    }, [
+        isAuthenticated,
+        user,
+        fetchBookingsWithRoomDetails,
+        setCurrentUser,
+        loadUserFromStorage,
+    ]);
 
     useEffect(() => {
         clearBookingError();
         clearUserError();
     }, [clearBookingError, clearUserError]);
+
+    const handleRefreshBookings = () => {
+        if (user) {
+            clearBookingError();
+            fetchBookingsWithRoomDetails(user.id, true);
+        }
+    };
 
     useEffect(() => {
         if (currentUser) {
@@ -106,44 +123,61 @@ export default function UserProfilePage() {
     };
 
     const handleInputChange = (field: keyof UserType, value: any) => {
-        setEditingUser(prev => ({
+        setEditingUser((prev) => ({
             ...prev,
-            [field]: value
+            [field]: value,
         }));
     };
-
 
     const handleAvatarChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
         if (!file) return;
-        
-        console.log("Selected file:", file.name, "Type:", file.type, "Size:", file.size);
-        
+
+        console.log(
+            "Selected file:",
+            file.name,
+            "Type:",
+            file.type,
+            "Size:",
+            file.size
+        );
+
         if (file.size > 5 * 1024 * 1024) {
-            alert('Kích thước ảnh quá lớn. Vui lòng chọn ảnh nhỏ hơn 5MB.');
+            alert("Kích thước ảnh quá lớn. Vui lòng chọn ảnh nhỏ hơn 5MB.");
             if (fileInputRef.current) {
-                fileInputRef.current.value = '';
+                fileInputRef.current.value = "";
             }
             return;
         }
 
-        const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
-        const fileExtension = file.name.split('.').pop()?.toLowerCase();
-        const allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
-        
-        const isValidType = allowedTypes.includes(file.type) || 
-                        (fileExtension && allowedExtensions.includes(fileExtension));
-        
+        const allowedTypes = [
+            "image/jpeg",
+            "image/jpg",
+            "image/png",
+            "image/gif",
+            "image/webp",
+        ];
+        const fileExtension = file.name.split(".").pop()?.toLowerCase();
+        const allowedExtensions = ["jpg", "jpeg", "png", "gif", "webp"];
+
+        const isValidType =
+            allowedTypes.includes(file.type) ||
+            (fileExtension && allowedExtensions.includes(fileExtension));
+
         if (!isValidType) {
-            alert(`Định dạng file không được hỗ trợ. Vui lòng chọn file: ${allowedExtensions.join(', ').toUpperCase()}`);
+            alert(
+                `Định dạng file không được hỗ trợ. Vui lòng chọn file: ${allowedExtensions
+                    .join(", ")
+                    .toUpperCase()}`
+            );
             if (fileInputRef.current) {
-                fileInputRef.current.value = '';
+                fileInputRef.current.value = "";
             }
             return;
         }
 
         setAvatarFile(file);
-        
+
         const reader = new FileReader();
         reader.onload = (e) => {
             setAvatarPreview(e.target?.result as string);
@@ -163,8 +197,11 @@ export default function UserProfilePage() {
                 email: editingUser.email || currentUser.email,
                 phone: editingUser.phone || currentUser.phone || "",
                 birthday: editingUser.birthday || currentUser.birthday,
-                gender: editingUser.gender !== undefined ? editingUser.gender : currentUser.gender,
-                avatar: currentUser.avatar
+                gender:
+                    editingUser.gender !== undefined
+                        ? editingUser.gender
+                        : currentUser.gender,
+                avatar: currentUser.avatar,
             };
 
             if (avatarFile) {
@@ -177,7 +214,9 @@ export default function UserProfilePage() {
                     }
                 } catch (avatarError) {
                     console.error("Avatar upload failed:", avatarError);
-                    alert('Không thể tải lên ảnh đại diện, nhưng sẽ lưu thông tin khác.');
+                    alert(
+                        "Không thể tải lên ảnh đại diện, nhưng sẽ lưu thông tin khác."
+                    );
                 }
             }
             success = await updateUserInfo(currentUser.id, updateData);
@@ -185,20 +224,20 @@ export default function UserProfilePage() {
                 setIsEditing(false);
                 setAvatarFile(null);
                 setAvatarPreview(null);
-                
+
                 if (fileInputRef.current) {
-                    fileInputRef.current.value = '';
+                    fileInputRef.current.value = "";
                 }
             }
         } catch (error) {
-            console.error('Error saving changes:', error);
+            console.error("Error saving changes:", error);
         }
     };
 
     const handleDeleteBooking = async (bookingId: number) => {
         setDeletingBookingId(bookingId);
         const success = await deleteBooking(bookingId);
-        
+
         if (success) {
             setShowDeleteModal(null);
         }
@@ -299,8 +338,8 @@ export default function UserProfilePage() {
                         <p className="text-gray-600 mb-6">
                             Vui lòng đăng nhập để xem thông tin cá nhân
                         </p>
-                        <button 
-                            onClick={() => navigate('/auth/signin')}
+                        <button
+                            onClick={() => navigate("/auth/signin")}
                             className="bg-sky-500 text-white px-6 py-3 rounded-lg font-medium hover:bg-sky-600 transition-colors"
                         >
                             Đăng nhập ngay
@@ -349,7 +388,11 @@ export default function UserProfilePage() {
                     <div className="flex bg-white rounded-lg p-1 shadow-sm mt-4 md:mt-0">
                         {[
                             { key: "profile", label: "Thông tin", icon: User },
-                            { key: "bookings", label: `Đặt phòng (${bookings.length})`, icon: Calendar },
+                            {
+                                key: "bookings",
+                                label: `Đặt phòng (${bookings.length})`,
+                                icon: Calendar,
+                            },
                         ].map((tab) => (
                             <button
                                 key={tab.key}
@@ -373,17 +416,25 @@ export default function UserProfilePage() {
                             <div className="flex items-center space-x-6">
                                 <div className="relative">
                                     <img
-                                        src={avatarPreview || currentUser?.avatar || 'https://via.placeholder.com/120x120?text=Avatar'}
+                                        src={
+                                            avatarPreview ||
+                                            currentUser?.avatar ||
+                                            "https://via.placeholder.com/120x120?text=Avatar"
+                                        }
                                         alt="Avatar"
                                         className="w-24 h-24 rounded-full border-4 border-white object-cover"
                                         onError={(e) => {
-                                            const target = e.target as HTMLImageElement;
-                                            target.src = 'https://via.placeholder.com/120x120?text=Avatar';
+                                            const target =
+                                                e.target as HTMLImageElement;
+                                            target.src =
+                                                "https://via.placeholder.com/120x120?text=Avatar";
                                         }}
                                     />
                                     {isEditing && (
                                         <button
-                                            onClick={() => fileInputRef.current?.click()}
+                                            onClick={() =>
+                                                fileInputRef.current?.click()
+                                            }
                                             className="absolute -bottom-2 -right-2 bg-white rounded-full p-2 shadow-lg hover:bg-gray-50 transition-colors"
                                             disabled={isUploadingAvatar}
                                         >
@@ -403,10 +454,14 @@ export default function UserProfilePage() {
                                     />
                                 </div>
                                 <div className="text-white">
-                                    <h2 className="text-2xl font-bold mb-1">{currentUser?.name}</h2>
-                                    <p className="text-sky-100 mb-2">{currentUser?.email}</p>
+                                    <h2 className="text-2xl font-bold mb-1">
+                                        {currentUser?.name}
+                                    </h2>
+                                    <p className="text-sky-100 mb-2">
+                                        {currentUser?.email}
+                                    </p>
                                     <div className="flex items-center space-x-2">
-                                        {currentUser?.role === 'ADMIN' ? (
+                                        {currentUser?.role === "ADMIN" ? (
                                             <span className="bg-red-500 text-white px-2 py-1 rounded-full text-xs font-medium flex items-center space-x-1">
                                                 <Shield className="w-3 h-3" />
                                                 <span>Quản trị viên</span>
@@ -427,7 +482,9 @@ export default function UserProfilePage() {
                                 <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
                                     <div className="flex items-center space-x-2">
                                         <AlertCircle className="w-5 h-5 text-red-600" />
-                                        <span className="text-red-800">{userError}</span>
+                                        <span className="text-red-800">
+                                            {userError}
+                                        </span>
                                     </div>
                                 </div>
                             )}
@@ -436,19 +493,26 @@ export default function UserProfilePage() {
                                 <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
                                     <div className="flex items-center space-x-2">
                                         <CheckCircle className="w-5 h-5 text-green-600" />
-                                        <span className="text-green-800">Cập nhật thông tin thành công!</span>
+                                        <span className="text-green-800">
+                                            Cập nhật thông tin thành công!
+                                        </span>
                                     </div>
                                 </div>
                             )}
 
                             <div className="flex justify-between items-center mb-8">
-                                <h3 className="text-lg font-semibold text-gray-900">Thông tin cá nhân</h3>
+                                <h3 className="text-lg font-semibold text-gray-900">
+                                    Thông tin cá nhân
+                                </h3>
                                 <div className="flex space-x-3">
                                     {isEditing ? (
                                         <>
                                             <button
                                                 onClick={handleEditToggle}
-                                                disabled={isUpdating || isUploadingAvatar}
+                                                disabled={
+                                                    isUpdating ||
+                                                    isUploadingAvatar
+                                                }
                                                 className="flex items-center space-x-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50"
                                             >
                                                 <X className="w-4 h-4" />
@@ -456,16 +520,24 @@ export default function UserProfilePage() {
                                             </button>
                                             <button
                                                 onClick={handleSaveChanges}
-                                                disabled={isUpdating || isUploadingAvatar}
+                                                disabled={
+                                                    isUpdating ||
+                                                    isUploadingAvatar
+                                                }
                                                 className="flex items-center space-x-2 px-4 py-2 bg-sky-500 text-white rounded-lg hover:bg-sky-600 transition-colors disabled:opacity-50"
                                             >
-                                                {isUpdating || isUploadingAvatar ? (
+                                                {isUpdating ||
+                                                isUploadingAvatar ? (
                                                     <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
                                                 ) : (
                                                     <Save className="w-4 h-4" />
                                                 )}
                                                 <span>
-                                                    {isUpdating ? 'Đang lưu...' : isUploadingAvatar ? 'Đang tải...' : 'Lưu thay đổi'}
+                                                    {isUpdating
+                                                        ? "Đang lưu..."
+                                                        : isUploadingAvatar
+                                                        ? "Đang tải..."
+                                                        : "Lưu thay đổi"}
                                                 </span>
                                             </button>
                                         </>
@@ -489,15 +561,23 @@ export default function UserProfilePage() {
                                     {isEditing ? (
                                         <input
                                             type="text"
-                                            value={editingUser.name || ''}
-                                            onChange={(e) => handleInputChange('name', e.target.value)}
+                                            value={editingUser.name || ""}
+                                            onChange={(e) =>
+                                                handleInputChange(
+                                                    "name",
+                                                    e.target.value
+                                                )
+                                            }
                                             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500"
                                             placeholder="Nhập họ và tên"
                                         />
                                     ) : (
                                         <div className="flex items-center space-x-2 p-3 bg-gray-50 rounded-lg">
                                             <User className="w-5 h-5 text-gray-400" />
-                                            <span>{currentUser?.name || 'Chưa cập nhật'}</span>
+                                            <span>
+                                                {currentUser?.name ||
+                                                    "Chưa cập nhật"}
+                                            </span>
                                         </div>
                                     )}
                                 </div>
@@ -509,15 +589,23 @@ export default function UserProfilePage() {
                                     {isEditing ? (
                                         <input
                                             type="email"
-                                            value={editingUser.email || ''}
-                                            onChange={(e) => handleInputChange('email', e.target.value)}
+                                            value={editingUser.email || ""}
+                                            onChange={(e) =>
+                                                handleInputChange(
+                                                    "email",
+                                                    e.target.value
+                                                )
+                                            }
                                             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500"
                                             placeholder="Nhập email"
                                         />
                                     ) : (
                                         <div className="flex items-center space-x-2 p-3 bg-gray-50 rounded-lg">
                                             <Mail className="w-5 h-5 text-gray-400" />
-                                            <span>{currentUser?.email || 'Chưa cập nhật'}</span>
+                                            <span>
+                                                {currentUser?.email ||
+                                                    "Chưa cập nhật"}
+                                            </span>
                                         </div>
                                     )}
                                 </div>
@@ -529,15 +617,23 @@ export default function UserProfilePage() {
                                     {isEditing ? (
                                         <input
                                             type="tel"
-                                            value={editingUser.phone || ''}
-                                            onChange={(e) => handleInputChange('phone', e.target.value)}
+                                            value={editingUser.phone || ""}
+                                            onChange={(e) =>
+                                                handleInputChange(
+                                                    "phone",
+                                                    e.target.value
+                                                )
+                                            }
                                             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500"
                                             placeholder="Nhập số điện thoại"
                                         />
                                     ) : (
                                         <div className="flex items-center space-x-2 p-3 bg-gray-50 rounded-lg">
                                             <Phone className="w-5 h-5 text-gray-400" />
-                                            <span>{currentUser?.phone || 'Chưa cập nhật'}</span>
+                                            <span>
+                                                {currentUser?.phone ||
+                                                    "Chưa cập nhật"}
+                                            </span>
                                         </div>
                                     )}
                                 </div>
@@ -549,18 +645,26 @@ export default function UserProfilePage() {
                                     {isEditing ? (
                                         <input
                                             type="date"
-                                            value={editingUser.birthday || ''}
-                                            onChange={(e) => handleInputChange('birthday', e.target.value)}
+                                            value={editingUser.birthday || ""}
+                                            onChange={(e) =>
+                                                handleInputChange(
+                                                    "birthday",
+                                                    e.target.value
+                                                )
+                                            }
                                             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500"
                                         />
                                     ) : (
                                         <div className="flex items-center space-x-2 p-3 bg-gray-50 rounded-lg">
                                             <Cake className="w-5 h-5 text-gray-400" />
                                             <span>
-                                                {currentUser?.birthday ? 
-                                                    new Date(currentUser.birthday).toLocaleDateString('vi-VN') : 
-                                                    'Chưa cập nhật'
-                                                }
+                                                {currentUser?.birthday
+                                                    ? new Date(
+                                                          currentUser.birthday
+                                                      ).toLocaleDateString(
+                                                          "vi-VN"
+                                                      )
+                                                    : "Chưa cập nhật"}
                                             </span>
                                         </div>
                                     )}
@@ -576,8 +680,16 @@ export default function UserProfilePage() {
                                                 <input
                                                     type="radio"
                                                     name="gender"
-                                                    checked={editingUser.gender === true}
-                                                    onChange={() => handleInputChange('gender', true)}
+                                                    checked={
+                                                        editingUser.gender ===
+                                                        true
+                                                    }
+                                                    onChange={() =>
+                                                        handleInputChange(
+                                                            "gender",
+                                                            true
+                                                        )
+                                                    }
                                                     className="mr-2 text-sky-500 focus:ring-sky-500"
                                                 />
                                                 Nam
@@ -586,8 +698,16 @@ export default function UserProfilePage() {
                                                 <input
                                                     type="radio"
                                                     name="gender"
-                                                    checked={editingUser.gender === false}
-                                                    onChange={() => handleInputChange('gender', false)}
+                                                    checked={
+                                                        editingUser.gender ===
+                                                        false
+                                                    }
+                                                    onChange={() =>
+                                                        handleInputChange(
+                                                            "gender",
+                                                            false
+                                                        )
+                                                    }
                                                     className="mr-2 text-sky-500 focus:ring-sky-500"
                                                 />
                                                 Nữ
@@ -597,8 +717,12 @@ export default function UserProfilePage() {
                                         <div className="flex items-center space-x-2 p-3 bg-gray-50 rounded-lg">
                                             <UserCheck className="w-5 h-5 text-gray-400" />
                                             <span>
-                                                {currentUser?.gender === true ? 'Nam' : 
-                                                 currentUser?.gender === false ? 'Nữ' : 'Chưa cập nhật'}
+                                                {currentUser?.gender === true
+                                                    ? "Nam"
+                                                    : currentUser?.gender ===
+                                                      false
+                                                    ? "Nữ"
+                                                    : "Chưa cập nhật"}
                                             </span>
                                         </div>
                                     )}
@@ -613,18 +737,41 @@ export default function UserProfilePage() {
                         <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
                             <div className="flex flex-col md:flex-row md:items-center md:justify-between">
                                 <h3 className="text-lg font-semibold text-gray-900 mb-4 md:mb-0">
-                                    Lịch sử đặt phòng ({filteredBookings.length} đặt phòng)
+                                    Lịch sử đặt phòng ({filteredBookings.length}{" "}
+                                    đặt phòng)
                                 </h3>
-                                
+
                                 <div className="flex bg-gray-100 rounded-lg p-1">
                                     {[
-                                        { key: "all", label: "Tất cả", count: bookings.length },
-                                        { key: "upcoming", label: "Sắp tới", count: bookings.filter(b => new Date(b.ngayDen) >= new Date()).length },
-                                        { key: "past", label: "Đã qua", count: bookings.filter(b => new Date(b.ngayDen) < new Date()).length },
+                                        {
+                                            key: "all",
+                                            label: "Tất cả",
+                                            count: bookings.length,
+                                        },
+                                        {
+                                            key: "upcoming",
+                                            label: "Sắp tới",
+                                            count: bookings.filter(
+                                                (b) =>
+                                                    new Date(b.ngayDen) >=
+                                                    new Date()
+                                            ).length,
+                                        },
+                                        {
+                                            key: "past",
+                                            label: "Đã qua",
+                                            count: bookings.filter(
+                                                (b) =>
+                                                    new Date(b.ngayDen) <
+                                                    new Date()
+                                            ).length,
+                                        },
                                     ].map((tab) => (
                                         <button
                                             key={tab.key}
-                                            onClick={() => setFilter(tab.key as any)}
+                                            onClick={() =>
+                                                setFilter(tab.key as any)
+                                            }
                                             className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
                                                 filter === tab.key
                                                     ? "bg-white text-sky-600 shadow-sm"
@@ -648,21 +795,22 @@ export default function UserProfilePage() {
                                     {bookingError}
                                 </p>
                                 <div className="flex justify-center space-x-3">
-                                    <button 
+                                    <button
                                         onClick={() => window.location.reload()}
                                         className="bg-sky-500 text-white px-6 py-3 rounded-lg font-medium hover:bg-sky-600 transition-colors flex items-center space-x-2"
                                     >
                                         <RefreshCw className="w-4 h-4" />
                                         <span>Thử lại</span>
                                     </button>
-                                    {user && (
-                                        <button 
-                                            onClick={() => fetchBookingsWithRoomDetails(user.id)}
-                                            className="border border-gray-300 text-gray-700 px-6 py-3 rounded-lg font-medium hover:bg-gray-50 transition-colors"
-                                        >
-                                            Tải lại dữ liệu
-                                        </button>
-                                    )}
+                                    <button
+                                        onClick={handleRefreshBookings}
+                                        className="border border-gray-300 text-gray-700 px-6 py-3 rounded-lg font-medium hover:bg-gray-50 transition-colors"
+                                        disabled={bookingLoading}
+                                    >
+                                        {bookingLoading
+                                            ? "Đang tải..."
+                                            : "Tải lại dữ liệu"}
+                                    </button>
                                 </div>
                             </div>
                         )}
@@ -673,17 +821,21 @@ export default function UserProfilePage() {
                                     <div className="bg-white rounded-xl shadow-sm p-12 text-center">
                                         <Calendar className="w-16 h-16 text-gray-400 mx-auto mb-4" />
                                         <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                                            {filter === 'all' ? 'Chưa có đặt phòng nào' : 
-                                             filter === 'upcoming' ? 'Không có chuyến đi sắp tới' :
-                                             'Không có chuyến đi nào trong quá khứ'}
+                                            {filter === "all"
+                                                ? "Chưa có đặt phòng nào"
+                                                : filter === "upcoming"
+                                                ? "Không có chuyến đi sắp tới"
+                                                : "Không có chuyến đi nào trong quá khứ"}
                                         </h3>
                                         <p className="text-gray-600 mb-6">
-                                            {filter === 'all' ? 'Hãy khám phá những phòng tuyệt vời và tạo chuyến đi đầu tiên' :
-                                             filter === 'upcoming' ? 'Hãy đặt chuyến đi tiếp theo của bạn' :
-                                             'Hãy xem những chuyến đi khác'}
+                                            {filter === "all"
+                                                ? "Hãy khám phá những phòng tuyệt vời và tạo chuyến đi đầu tiên"
+                                                : filter === "upcoming"
+                                                ? "Hãy đặt chuyến đi tiếp theo của bạn"
+                                                : "Hãy xem những chuyến đi khác"}
                                         </p>
-                                        <button 
-                                            onClick={() => navigate('/rooms')}
+                                        <button
+                                            onClick={() => navigate("/rooms")}
                                             className="bg-sky-500 text-white px-6 py-3 rounded-lg font-medium hover:bg-sky-600 transition-colors"
                                         >
                                             Tìm phòng ngay
@@ -700,13 +852,27 @@ export default function UserProfilePage() {
                                                     {/* Room Image */}
                                                     <div className="md:w-1/3">
                                                         <img
-                                                            src={booking.room?.hinhAnh || 'https://via.placeholder.com/400x300?text=No+Image'}
-                                                            alt={booking.room?.tenPhong || `Phòng ${booking.maPhong}`}
+                                                            src={
+                                                                booking.room
+                                                                    ?.hinhAnh ||
+                                                                "https://via.placeholder.com/400x300?text=No+Image"
+                                                            }
+                                                            alt={
+                                                                booking.room
+                                                                    ?.tenPhong ||
+                                                                `Phòng ${booking.maPhong}`
+                                                            }
                                                             className="w-full h-48 md:h-full object-cover cursor-pointer hover:opacity-90 transition-opacity"
-                                                            onClick={() => navigate(`/room-detail/${booking.maPhong}`)}
+                                                            onClick={() =>
+                                                                navigate(
+                                                                    `/room-detail/${booking.maPhong}`
+                                                                )
+                                                            }
                                                             onError={(e) => {
-                                                                const target = e.target as HTMLImageElement;
-                                                                target.src = 'https://via.placeholder.com/400x300?text=No+Image';
+                                                                const target =
+                                                                    e.target as HTMLImageElement;
+                                                                target.src =
+                                                                    "https://via.placeholder.com/400x300?text=No+Image";
                                                             }}
                                                         />
                                                     </div>
@@ -720,45 +886,85 @@ export default function UserProfilePage() {
                                                                             booking.status
                                                                         )}`}
                                                                     >
-                                                                        {getStatusIcon(booking.status)}
+                                                                        {getStatusIcon(
+                                                                            booking.status
+                                                                        )}
                                                                         <span>
-                                                                            {getStatusText(booking.status)}
+                                                                            {getStatusText(
+                                                                                booking.status
+                                                                            )}
                                                                         </span>
                                                                     </span>
                                                                     <span className="text-sm text-gray-500">
-                                                                        #{booking.id}
+                                                                        #
+                                                                        {
+                                                                            booking.id
+                                                                        }
                                                                     </span>
                                                                 </div>
-                                                                <h3 className="text-xl font-semibold text-gray-900 mb-1 cursor-pointer hover:text-blue-600 transition-colors"
-                                                                    onClick={() => navigate(`/room-detail/${booking.maPhong}`)}>
-                                                                    {booking.room?.tenPhong || `Phòng ${booking.maPhong}`}
+                                                                <h3
+                                                                    className="text-xl font-semibold text-gray-900 mb-1 cursor-pointer hover:text-blue-600 transition-colors"
+                                                                    onClick={() =>
+                                                                        navigate(
+                                                                            `/room-detail/${booking.maPhong}`
+                                                                        )
+                                                                    }
+                                                                >
+                                                                    {booking
+                                                                        .room
+                                                                        ?.tenPhong ||
+                                                                        `Phòng ${booking.maPhong}`}
                                                                 </h3>
                                                                 <div className="flex items-center text-gray-600 text-sm">
                                                                     <MapPin className="w-4 h-4 mr-1" />
                                                                     <span>
-                                                                        Mã phòng: {booking.maPhong}
+                                                                        Mã
+                                                                        phòng:{" "}
+                                                                        {
+                                                                            booking.maPhong
+                                                                        }
                                                                     </span>
                                                                 </div>
                                                                 {!booking.room && (
                                                                     <div className="mt-2 text-sm text-amber-600 bg-amber-50 px-2 py-1 rounded-md">
-                                                                        ⚠️ Không thể tải thông tin chi tiết phòng
+                                                                        ⚠️ Không
+                                                                        thể tải
+                                                                        thông
+                                                                        tin chi
+                                                                        tiết
+                                                                        phòng
                                                                     </div>
                                                                 )}
                                                             </div>
 
                                                             <div className="text-right mt-4 md:mt-0">
                                                                 <div className="text-2xl font-bold text-gray-900">
-                                                                    {booking.room && booking.room.giaTien ? 
-                                                                        formatPrice(calculateTotal(booking)) : 
-                                                                        'Đang cập nhật'
-                                                                    }
+                                                                    {booking.room &&
+                                                                    booking.room
+                                                                        .giaTien
+                                                                        ? formatPrice(
+                                                                              calculateTotal(
+                                                                                  booking
+                                                                              )
+                                                                          )
+                                                                        : "Đang cập nhật"}
                                                                 </div>
                                                                 <div className="text-sm text-gray-500">
-                                                                    {calculateDays(booking.ngayDen, booking.ngayDi)} đêm
+                                                                    {calculateDays(
+                                                                        booking.ngayDen,
+                                                                        booking.ngayDi
+                                                                    )}{" "}
+                                                                    đêm
                                                                 </div>
-                                                                {booking.room?.giaTien && (
+                                                                {booking.room
+                                                                    ?.giaTien && (
                                                                     <div className="text-xs text-gray-400 mt-1">
-                                                                        {formatPrice(booking.room.giaTien)}/đêm
+                                                                        {formatPrice(
+                                                                            booking
+                                                                                .room
+                                                                                .giaTien
+                                                                        )}
+                                                                        /đêm
                                                                     </div>
                                                                 )}
                                                             </div>
@@ -769,10 +975,13 @@ export default function UserProfilePage() {
                                                                 <Calendar className="w-5 h-5 text-gray-400" />
                                                                 <div>
                                                                     <div className="text-sm text-gray-500">
-                                                                        Nhận phòng
+                                                                        Nhận
+                                                                        phòng
                                                                     </div>
                                                                     <div className="font-medium">
-                                                                        {formatDate(booking.ngayDen)}
+                                                                        {formatDate(
+                                                                            booking.ngayDen
+                                                                        )}
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -780,10 +989,13 @@ export default function UserProfilePage() {
                                                                 <Calendar className="w-5 h-5 text-gray-400" />
                                                                 <div>
                                                                     <div className="text-sm text-gray-500">
-                                                                        Trả phòng
+                                                                        Trả
+                                                                        phòng
                                                                     </div>
                                                                     <div className="font-medium">
-                                                                        {formatDate(booking.ngayDi)}
+                                                                        {formatDate(
+                                                                            booking.ngayDi
+                                                                        )}
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -794,7 +1006,10 @@ export default function UserProfilePage() {
                                                                         Số khách
                                                                     </div>
                                                                     <div className="font-medium">
-                                                                        {booking.soLuongKhach} người
+                                                                        {
+                                                                            booking.soLuongKhach
+                                                                        }{" "}
+                                                                        người
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -802,27 +1017,32 @@ export default function UserProfilePage() {
 
                                                         {booking.room && (
                                                             <div className="flex flex-wrap gap-2 mb-4">
-                                                                {booking.room.wifi && (
+                                                                {booking.room
+                                                                    .wifi && (
                                                                     <span className="px-2 py-1 bg-blue-50 text-blue-700 text-xs rounded-full">
                                                                         WiFi
                                                                     </span>
                                                                 )}
-                                                                {booking.room.dieuHoa && (
+                                                                {booking.room
+                                                                    .dieuHoa && (
                                                                     <span className="px-2 py-1 bg-green-50 text-green-700 text-xs rounded-full">
                                                                         Điều hòa
                                                                     </span>
                                                                 )}
-                                                                {booking.room.bep && (
+                                                                {booking.room
+                                                                    .bep && (
                                                                     <span className="px-2 py-1 bg-orange-50 text-orange-700 text-xs rounded-full">
                                                                         Bếp
                                                                     </span>
                                                                 )}
-                                                                {booking.room.hoBoi && (
+                                                                {booking.room
+                                                                    .hoBoi && (
                                                                     <span className="px-2 py-1 bg-cyan-50 text-cyan-700 text-xs rounded-full">
                                                                         Hồ bơi
                                                                     </span>
                                                                 )}
-                                                                {booking.room.mayGiat && (
+                                                                {booking.room
+                                                                    .mayGiat && (
                                                                     <span className="px-2 py-1 bg-purple-50 text-purple-700 text-xs rounded-full">
                                                                         Máy giặt
                                                                     </span>
@@ -831,23 +1051,37 @@ export default function UserProfilePage() {
                                                         )}
 
                                                         <div className="flex flex-wrap gap-3">
-                                                            <button 
-                                                                onClick={() => navigate(`/room-detail/${booking.maPhong}`)}
+                                                            <button
+                                                                onClick={() =>
+                                                                    navigate(
+                                                                        `/room-detail/${booking.maPhong}`
+                                                                    )
+                                                                }
                                                                 className="flex items-center space-x-1 px-4 py-2 bg-gradient-to-r from-sky-300 to-blue-300 text-white rounded-lg hover:opacity-80 transition-colors text-sm"
                                                             >
                                                                 <Eye className="w-4 h-4" />
-                                                                <span>Xem chi tiết</span>
+                                                                <span>
+                                                                    Xem chi tiết
+                                                                </span>
                                                             </button>
                                                             <button className="flex items-center space-x-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm">
                                                                 <Star className="w-4 h-4" />
-                                                                <span>Đánh giá</span>
+                                                                <span>
+                                                                    Đánh giá
+                                                                </span>
                                                             </button>
                                                             <button
-                                                                onClick={() => setShowDeleteModal(booking.id)}
+                                                                onClick={() =>
+                                                                    setShowDeleteModal(
+                                                                        booking.id
+                                                                    )
+                                                                }
                                                                 className="flex items-center space-x-1 px-4 py-2 border border-red-300 text-red-700 rounded-lg hover:bg-red-50 transition-colors text-sm"
                                                             >
                                                                 <Trash2 className="w-4 h-4" />
-                                                                <span>Hủy đặt</span>
+                                                                <span>
+                                                                    Hủy đặt
+                                                                </span>
                                                             </button>
                                                         </div>
                                                     </div>
@@ -873,7 +1107,8 @@ export default function UserProfilePage() {
                                 Xác nhận hủy đặt phòng
                             </h3>
                             <p className="text-gray-600">
-                                Bạn có chắc chắn muốn hủy đặt phòng #{showDeleteModal}? 
+                                Bạn có chắc chắn muốn hủy đặt phòng #
+                                {showDeleteModal}?
                                 <br />
                                 <span className="text-sm text-red-600 font-medium">
                                     Hành động này không thể hoàn tác.
@@ -890,7 +1125,9 @@ export default function UserProfilePage() {
                                 Hủy bỏ
                             </button>
                             <button
-                                onClick={() => handleDeleteBooking(showDeleteModal)}
+                                onClick={() =>
+                                    handleDeleteBooking(showDeleteModal)
+                                }
                                 disabled={deletingBookingId === showDeleteModal}
                                 className="flex-1 px-4 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 flex items-center justify-center font-medium"
                             >
@@ -900,7 +1137,7 @@ export default function UserProfilePage() {
                                         <span>Đang hủy...</span>
                                     </div>
                                 ) : (
-                                    'Xác nhận hủy'
+                                    "Xác nhận hủy"
                                 )}
                             </button>
                         </div>

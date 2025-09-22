@@ -41,12 +41,14 @@ export const useCommentStore = create<CommentStore>((set, get) => ({
     setUsersError: (error) => set({usersError: error}),
 
     fetchComments: async () => {
+        const { comments, loading } = get();
+        if (loading || comments.length > 0) return;
         set({loading: true, error: null});
         try {
             const data = await getCommentsApi();
             set({comments: data, loading: false});
         } catch (error) {
-            console.error("Fetch comments error:", error);
+            console.error(error);
             set({
                 error: "Không thể tải danh sách bình luận.",
                 loading: false
@@ -55,12 +57,14 @@ export const useCommentStore = create<CommentStore>((set, get) => ({
     },
 
     fetchUsers: async () => {
+        const { users, usersLoading } = get();
+        if (usersLoading || users.length > 0) return;
         set({usersLoading: true, usersError: null});
         try {
             const data = await getUserApi();
             set({users: data, usersLoading:false});
         } catch (error) {
-            console.error("Fetch users error:", error);
+            console.error(error);
             set({
                 usersError: "Không thể tải danh sách người dùng.",
                 usersLoading: false
@@ -96,8 +100,6 @@ export const useCommentStore = create<CommentStore>((set, get) => ({
             return true;
             
         } catch (error: any) {
-            console.error("Submit comment error:", error);
-            
             let errorMessage = "Không thể gửi bình luận!";
             
             if (error?.response?.status === 403) {
@@ -109,7 +111,6 @@ export const useCommentStore = create<CommentStore>((set, get) => ({
             } else if (error?.response?.data?.message) {
                 errorMessage = error.response.data.message;
             }
-            
             set({
                 error: errorMessage,
                 loading: false

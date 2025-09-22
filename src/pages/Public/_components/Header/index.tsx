@@ -1,9 +1,9 @@
 import { Bed, Home, Phone, User, CircleAlert, ChevronDown, LogOut, Shield } from "lucide-react";
 import React, { useState, useRef, useEffect } from "react";
-import "./_header.scss";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { userAuthStore } from "@/store/auth.store";
 import { useLocationStore } from "@/store/location.store";
+import "./_header.scss";
 
 interface MenuContent {
     title: string;
@@ -40,7 +40,6 @@ export default function Header() {
         fetchLocations();
     }, [fetchLocations]);
 
-    // Menu items được cập nhật dựa trên trạng thái đăng nhập
     const menuItems: MenuItem[] = [
         {
             id: "home",
@@ -191,7 +190,6 @@ export default function Header() {
                             );
                         })}
 
-                        {/* User Avatar/Dropdown */}
                         {isAuthenticated && user && (
                             <div className="relative -top-1" ref={dropdownRef}>
                                 <button
@@ -217,7 +215,6 @@ export default function Header() {
                                     </span>
                                 </button>
 
-                                {/* Dropdown Menu */}
                                 {isUserDropdownOpen && (
                                     <div className="absolute top-full right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
                                         <Link
@@ -229,7 +226,6 @@ export default function Header() {
                                             <span>Thông tin</span>
                                         </Link>
 
-                                        {/* Admin menu */}
                                         {user.role === 'ADMIN' && (
                                             <Link
                                                 to="/admin"
@@ -262,23 +258,13 @@ export default function Header() {
                     >
                         <div className="w-6 h-6 flex flex-col justify-center items-center">
                             <span
-                                className={`block w-6 h-0.5 bg-gray-600 group-hover:bg-blue-600 transition-all duration-300 ease-in-out ${
-                                    isMenuOpen
-                                        ? "rotate-45 translate-y-1.5"
-                                        : "-translate-y-1"
-                                }`}
+                                className={`block w-6 h-0.5 bg-gray-600 group-hover:bg-blue-600 transition-all duration-300 ease-in-out ${isMenuOpen ? "rotate-45 translate-y-1.5" : "-translate-y-1"}`}
                             ></span>
                             <span
-                                className={`block w-6 h-0.5 bg-gray-600 group-hover:bg-blue-600 transition-all duration-300 ease-in-out ${
-                                    isMenuOpen ? "opacity-0" : "opacity-100"
-                                } my-1`}
+                                className={`block w-6 h-0.5 bg-gray-600 group-hover:bg-blue-600 transition-all duration-300 ease-in-out ${isMenuOpen ? "opacity-0" : "opacity-100"} my-1`}
                             ></span>
                             <span
-                                className={`block w-6 h-0.5 bg-gray-600 group-hover:bg-blue-600 transition-all duration-300 ease-in-out ${
-                                    isMenuOpen
-                                        ? "-rotate-45 -translate-y-1.5"
-                                        : "translate-y-1"
-                                }`}
+                                className={`block w-6 h-0.5 bg-gray-600 group-hover:bg-blue-600 transition-all duration-300 ease-in-out ${isMenuOpen ? "-rotate-45 -translate-y-1.5" : "translate-y-1"}`}
                             ></span>
                         </div>
                     </button>
@@ -326,7 +312,6 @@ export default function Header() {
                                 )
                             )}
 
-                            {/* User menu items for mobile */}
                             {isAuthenticated && user && (
                                 <>
                                     <div className="border-t border-gray-700 pt-6 mt-6">
@@ -386,20 +371,12 @@ export default function Header() {
                                 </button>
                             ) : (
                                 <Link
-                                    to={
-                                        menuItems.find(
-                                            (i) => i.id === mobileSelectedItem
-                                        )?.href || "/"
-                                    }
+                                    to={menuItems.find((i) => i.id === mobileSelectedItem)?.href || "/"}
                                     onClick={() => setIsMenuOpen(false)}
                                     className="block w-full text-center bg-gradient-to-r from-sky-300 to-blue-300 text-white py-3 rounded-lg font-medium transform hover:scale-101 transition-all duration-200"
                                 >
                                     Đi đến{" "}
-                                    {
-                                        menuItems.find(
-                                            (i) => i.id === mobileSelectedItem
-                                        )?.label
-                                    }
+                                    {menuItems.find((i) => i.id === mobileSelectedItem)?.label}
                                 </Link>
                             )}
                         </div>
@@ -426,9 +403,7 @@ export default function Header() {
                                             >
                                                 <div
                                                     className="h-32 relative"
-                                                    style={{
-                                                        background: location.hinhAnh && location.hinhAnh.trim() !== '' ? 
-                                                            `linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.2)), url(${location.hinhAnh}) center/cover no-repeat` : ''
+                                                    style={{background: location.hinhAnh && location.hinhAnh.trim() !== '' ? `linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.2)), url(${location.hinhAnh}) center/cover no-repeat` : ''
                                                     }}
                                                 >
                                                     <div className="absolute inset-0 bg-black/40 bg-opacity-10 group-hover:bg-opacity-5 transition-all duration-300"></div>
@@ -462,9 +437,7 @@ export default function Header() {
                             </div>
                         ) : (
                             (() => {
-                                const currentContent = menuItems.find(
-                                    (i) => i.id === mobileSelectedItem
-                                )?.content;
+                                const currentContent = menuItems.find((i) => i.id === mobileSelectedItem)?.content;
                                 if (
                                     currentContent &&
                                     (currentContent.title ||
@@ -475,13 +448,7 @@ export default function Header() {
                                         <div className="max-w-md">
                                             <div className="mb-6">
                                                 <div className="w-16 h-16 bg-gradient-to-r from-sky-300 to-blue-300 rounded-full flex items-center justify-center mb-4">
-                                                    {
-                                                        menuItems.find(
-                                                            (i) =>
-                                                                i.id ===
-                                                                mobileSelectedItem
-                                                        )?.icon
-                                                    }
+                                                    {menuItems.find((i) => i.id === mobileSelectedItem)?.icon}
                                                 </div>
                                             </div>
                                             <h3 className="text-2xl font-bold text-gray-900 mb-4">

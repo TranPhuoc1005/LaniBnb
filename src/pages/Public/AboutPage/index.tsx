@@ -1,18 +1,4 @@
-import { 
-    Star, 
-    MapPin, 
-    Calendar, 
-    Award,
-    Zap,
-    Shield,
-    Gift,
-    Phone,
-    Mail,
-    MessageCircle,
-    ArrowRight,
-    ChevronDown,
-    ChevronRight
-} from 'lucide-react';
+import { Star, MapPin, Calendar, Award, Zap, Shield, Gift,Phone ,Mail, MessageCircle, ArrowRight, ChevronDown, ChevronRight} from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 export default function AboutPage() {
@@ -102,19 +88,15 @@ export default function AboutPage() {
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50">
-            {/* Hero Section */}
             <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-                {/* Background */}
                 <div className="absolute inset-0 bg-gradient-to-r from-sky-300 to-blue-300">
                     <div className="absolute inset-0 bg-black/20"></div>
                     <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?ixlib=rb-4.0.3&w=1920&h=1080&fit=crop')] bg-cover bg-center mix-blend-multify"></div>
                 </div>
 
-                {/* Floating Elements */}
                 <div className="absolute top-20 left-20 w-32 h-32 bg-white/10 rounded-full blur-xl animate-pulse"></div>
                 <div className="absolute bottom-20 right-20 w-40 h-40 bg-white/10 rounded-full blur-xl animate-pulse delay-1000"></div>
 
-                {/* Content */}
                 <div className="relative z-10 text-center text-white max-w-5xl mx-auto px-6">
                     <h1 className="text-5xl md:text-7xl font-bold mb-8 leading-tight">
                         Khám Phá Việt Nam
@@ -137,13 +119,11 @@ export default function AboutPage() {
                     </div>
                 </div>
 
-                {/* Scroll Indicator */}
                 <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-white animate-bounce">
                     <ChevronDown className="w-8 h-8" />
                 </div>
             </section>
 
-            {/* Services Section */}
             <section className="py-20 px-6">
                 <div className="max-w-7xl mx-auto">
                     <div className="text-center mb-16">
@@ -186,7 +166,6 @@ export default function AboutPage() {
                 </div>
             </section>
 
-            {/* Experience Section */}
             <section className="py-20 px-6 bg-gradient-to-r from-sky-300 to-blue-300">
                 <div className="max-w-7xl mx-auto">
                     <div className="text-center mb-16">
@@ -238,7 +217,6 @@ export default function AboutPage() {
                 </div>
             </section>
 
-            {/* Events Section */}
             <section className="py-20 px-6">
                 <div className="max-w-7xl mx-auto">
                     <div className="text-center mb-16">
@@ -295,7 +273,6 @@ export default function AboutPage() {
                 </div>
             </section>
 
-            {/* CTA Section */}
             <section className="py-20 px-6 bg-gradient-to-r from-sky-300 to-blue-300">
                 <div className="max-w-4xl mx-auto text-center">
                     <div className="bg-white/10 backdrop-blur-sm rounded-3xl p-12 border border-white/20">
@@ -319,7 +296,6 @@ export default function AboutPage() {
                 </div>
             </section>
 
-            {/* Contact Section */}
             <section className="py-20 px-6 bg-gray-50">
                 <div className="max-w-7xl mx-auto">
                     <div className="text-center mb-16">

@@ -1,16 +1,4 @@
-import { 
-    MapPin, 
-    Phone, 
-    Mail, 
-    Facebook, 
-    Instagram, 
-    Twitter, 
-    Youtube,
-    Star,
-    Shield,
-    Clock,
-    Award
-} from "lucide-react";
+import { MapPin, Phone, Mail, Facebook, Instagram, Twitter, Youtube, Star, Shield, Clock, Award} from "lucide-react";
 
 export default function Footer() {
     const quickLinks = [
@@ -38,7 +26,6 @@ export default function Footer() {
 
     return (
         <footer className="bg-gradient-to-r from-sky-300 to-blue-300 text-white relative overflow-hidden">
-            {/* Background decoration */}
             <div className="absolute inset-0 opacity-10">
                 <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-blue-600/20 to-purple-600/20"></div>
                 <div className="absolute top-10 left-10 w-32 h-32 bg-blue-400/10 rounded-full blur-xl"></div>
@@ -46,7 +33,6 @@ export default function Footer() {
             </div>
 
             <div className="relative z-10">
-                {/* Achievements Section */}
                 <div className="border-b border-white/10 py-8">
                     <div className="max-w-6xl mx-auto px-4">
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -65,10 +51,8 @@ export default function Footer() {
                     </div>
                 </div>
 
-                {/* Main Footer Content */}
                 <div className="max-w-6xl mx-auto px-4 py-12">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                        {/* Brand Section */}
                         <div className="lg:col-span-1">
                             <div className="flex items-center space-x-2 mb-6">
                                 <div className="rounded-lg">
@@ -96,7 +80,6 @@ export default function Footer() {
                             </div>
                         </div>
 
-                        {/* Quick Links */}
                         <div>
                             <h3 className="text-lg font-semibold mb-6 text-white">Liên kết nhanh</h3>
                             <ul className="space-y-3">
@@ -114,7 +97,6 @@ export default function Footer() {
                             </ul>
                         </div>
 
-                        {/* Destinations */}
                         <div>
                             <h3 className="text-lg font-semibold mb-6 text-white">Điểm đến phổ biến</h3>
                             <ul className="space-y-3">
@@ -132,7 +114,6 @@ export default function Footer() {
                             </ul>
                         </div>
 
-                        {/* Contact Info */}
                         <div>
                             <h3 className="text-lg font-semibold mb-6 text-white">Thông tin liên hệ</h3>
                             <div className="space-y-4">
@@ -167,7 +148,6 @@ export default function Footer() {
                     </div>
                 </div>
 
-                {/* Bottom Section */}
                 <div className="border-t border-white/10">
                     <div className="max-w-6xl mx-auto px-4 py-6">
                         <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">

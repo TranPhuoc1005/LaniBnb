@@ -63,7 +63,6 @@ const convertApiRoomToUIRoom = (apiRoom: RoomWithLocation): Room => {
 export default function ListRoomPage() {
     const [searchParams, setSearchParams] = useSearchParams();
     
-    // Get search params from URL
     const urlLocationId = searchParams.get('location');
     const urlCheckIn = searchParams.get('checkIn');
     const urlCheckOut = searchParams.get('checkOut');
@@ -84,14 +83,17 @@ export default function ListRoomPage() {
         guests: ""
     });
     const roomsPerPage = 12;
-
     const { roomsWithLocation, error, fetchRoomsWithLocation } = useRoomStore();
     const { locations, fetchLocations } = useLocationStore();
 
     useEffect(() => {
-        fetchRoomsWithLocation();
-        fetchLocations();
-    }, [fetchRoomsWithLocation, fetchLocations]);
+        if (roomsWithLocation.length === 0) {
+            fetchRoomsWithLocation();
+        }
+        if (locations.length === 0) {
+            fetchLocations();
+        }
+    }, []);
 
     useEffect(() => {
         if (urlLocationId && locations.length > 0) {
