@@ -1,0 +1,7 @@
+.h_menu {
+    clip-path: polygon(100% 100%, 100% 0, 100% 0, 100% 100%, 0 100%, 0 100%);
+    transition: all .8s ease .4s;
+    &.active {
+        clip-path: polygon(0 0, 100% 0, 100% 50%, 100% 100%, 0 100%, 0 50%);
+    }
+}
