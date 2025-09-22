@@ -1,4 +1,3 @@
-import { useState, useEffect } from 'react';
 import { 
     Star, 
     MapPin, 
@@ -17,20 +16,6 @@ import {
 import { Link } from 'react-router-dom';
 
 export default function AboutPage() {
-    const [visibleSection, setVisibleSection] = useState('hero');
-
-    useEffect(() => {
-        const sections = ['hero', 'services', 'experience', 'events', 'contact'];
-        let currentIndex = 0;
-        
-        const interval = setInterval(() => {
-            currentIndex = (currentIndex + 1) % sections.length;
-            setVisibleSection(sections[currentIndex]);
-        }, 5000);
-
-        return () => clearInterval(interval);
-    }, []);
-
     const services = [
         {
             icon: <Award className="w-8 h-8" />,

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { User, Lock, Hotel, ArrowLeft, ArrowRight, Mail, AlertCircle, Loader2, Phone, Calendar, Shield, UserCheck } from "lucide-react";
+import { User, Lock, Hotel, ArrowLeft, ArrowRight, Mail, AlertCircle, Loader2, Phone, Calendar, Shield } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate, Link } from "react-router-dom";
 import { userAuthStore } from "@/store/auth.store";

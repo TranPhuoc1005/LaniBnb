@@ -17,7 +17,7 @@ interface ReviewsSectionProps {
     hasBookedThisRoom?: boolean;
 }
 
-export default function Comments({ maPhong }: ReviewsSectionProps) {
+export default function Comments() {
     const { user, isAuthenticated } = userAuthStore();
     
     const { 
@@ -26,15 +26,7 @@ export default function Comments({ maPhong }: ReviewsSectionProps) {
         loading, 
         usersLoading, 
         fetchAll,
-        submitComment 
     } = useCommentStore();
-
-    const [commentForm, setCommentForm] = useState({
-        noiDung: "",
-        saoBinhLuan: 5,
-        maPhong: maPhong || 1,
-    });
-    const [isSubmitting, setIsSubmitting] = useState(false);
 
     useEffect(() => {
         fetchAll();
@@ -65,7 +57,7 @@ export default function Comments({ maPhong }: ReviewsSectionProps) {
                     };
                 })
                 .sort((a, b) => new Date(b.ngayBinhLuan).getTime() - new Date(a.ngayBinhLuan).getTime())
-                .slice(0, isAuthenticated ? 10 : 3); // Hiển thị nhiều hơn nếu đã login
+                .slice(0, isAuthenticated ? 10 : 3);
 
             setAllReviews(displayReviews);
         }
@@ -81,30 +73,6 @@ export default function Comments({ maPhong }: ReviewsSectionProps) {
             }
             return newSet;
         });
-    };
-
-    const handleSubmitComment = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!user || !commentForm.noiDung.trim()) return;
-
-        setIsSubmitting(true);
-        const newComment: Comments = {
-            id: Date.now(),
-            maPhong: commentForm.maPhong,
-            maNguoiBinhLuan: user.id,
-            ngayBinhLuan: new Date().toISOString(),
-            noiDung: commentForm.noiDung.trim(),
-            saoBinhLuan: commentForm.saoBinhLuan,
-            tenNguoiBinhLuan: user.name,
-            avatar: user.avatar || "",
-        };
-
-        const success = await submitComment(newComment);
-        if (success) {
-            setAllReviews(prev => [newComment, ...prev]); // update local ngay
-            setCommentForm({ noiDung: "", saoBinhLuan: 5, maPhong: commentForm.maPhong });
-        }
-        setIsSubmitting(false);
     };
 
     const formatDate = (dateString: string) => {

@@ -415,7 +415,7 @@ export default function Header() {
                                     </div>
                                 ) : locations.length > 0 ? (
                                     <div className="grid grid-cols-2 gap-4">
-                                        {locations.map((location, index) => (
+                                        {locations.map((location) => (
                                             <div
                                                 key={location.id}
                                                 className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transform hover:scale-105 transition-all duration-300 cursor-pointer group"

@@ -1,4 +1,3 @@
-import React from "react";
 import { CheckCircle, Calendar, Users, MapPin, Phone, Mail } from "lucide-react";
 import type { Booking } from "@/interfaces/booking.interface";
 
