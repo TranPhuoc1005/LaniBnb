@@ -1,33 +1,24 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { 
     Star, 
     MapPin, 
     Calendar, 
-    Users, 
     Award,
-    Heart,
     Zap,
-    CheckCircle,
     Shield,
-    Clock,
-    Camera,
-    TrendingUp,
     Gift,
     Phone,
     Mail,
     MessageCircle,
     ArrowRight,
-    Play,
     ChevronDown,
     ChevronRight
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 export default function AboutPage() {
-    const [activeTab, setActiveTab] = useState('services');
     const [visibleSection, setVisibleSection] = useState('hero');
 
-    // Simulate scroll effect
     useEffect(() => {
         const sections = ['hero', 'services', 'experience', 'events', 'contact'];
         let currentIndex = 0;

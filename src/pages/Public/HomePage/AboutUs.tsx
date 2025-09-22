@@ -13,7 +13,6 @@ import {
     Headphones,
 } from "lucide-react";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
 
@@ -118,7 +117,6 @@ export default function AboutUsSection() {
                     </p>
                 </div>
 
-                {/* Stats */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-20">
                     {stats.map((stat, index) => (
                         <Card

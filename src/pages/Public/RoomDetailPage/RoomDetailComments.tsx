@@ -3,7 +3,6 @@ import {
     Star,
     Heart,
     MessageCircle,
-    User,
     Send,
     Filter,
     Award,
@@ -14,7 +13,6 @@ import {
 import { useCommentStore } from "@/store/comment.store";
 import { userAuthStore } from "@/store/auth.store";
 import { useBookingStore } from "@/store/booking.store";
-import type { User as UserType } from "@/interfaces/users.interface";
 import type { Comments } from "@/interfaces/comments.interface";
 import { Link } from "react-router-dom";
 

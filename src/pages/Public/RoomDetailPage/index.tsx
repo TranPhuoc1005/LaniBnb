@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { MapPin, Heart, Share2, ChevronLeft, ChevronRight, Check, X, Camera, Calendar, Users, CheckCircle } from "lucide-react";
+import { MapPin, Heart, Share2, ChevronLeft, ChevronRight, Check, X, Camera, CheckCircle } from "lucide-react";
 import { useRoomStore } from "@/store/room.store";
 import { useLocationStore } from "@/store/location.store";
 import { useBookingStore } from "@/store/booking.store";

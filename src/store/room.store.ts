@@ -1,7 +1,6 @@
 import { create } from 'zustand';
 import type { Room, RoomWithLocation } from '@/interfaces/room.interface';
-import type { Location } from '@/interfaces/location.interface';
-import { getRoomDetailApi, getRoomsApi } from '@/services/room.api';
+import { getRoomsApi } from '@/services/room.api';
 import { useLocationStore } from './location.store';
 
 type RoomStore = {
@@ -50,18 +49,14 @@ export const useRoomStore = create<RoomStore>((set, get) => ({
     fetchRoomsWithLocation: async () => {
         set({ loading: true, error: null });
         try {
-            // Lấy danh sách phòng
             const rooms = await getRoomsApi();
             
-            // Lấy danh sách vị trí từ location store
             const locationStore = useLocationStore.getState();
             
-            // Nếu chưa có locations, fetch trước
             if (locationStore.locations.length === 0) {
                 await locationStore.fetchLocations();
             }
 
-            // Kết hợp thông tin phòng với vị trí
             const roomsWithLocation: RoomWithLocation[] = rooms.map(room => {
                 const location = locationStore.getLocationById(room.maViTri);
                 return {

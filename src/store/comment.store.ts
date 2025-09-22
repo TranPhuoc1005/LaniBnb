@@ -77,14 +77,9 @@ export const useCommentStore = create<CommentStore>((set, get) => ({
         set({loading: true, error: null});
         
         try {
-            console.log("Submitting comment with data:", comment);
-            
-            // Validate required fields
             if (!comment.maPhong || !comment.maNguoiBinhLuan || !comment.noiDung?.trim()) {
                 throw new Error("Thiếu thông tin bắt buộc");
             }
-            
-            // Ensure proper data types
             const sanitizedComment = {
                 maPhong: Number(comment.maPhong),
                 maNguoiBinhLuan: Number(comment.maNguoiBinhLuan),
@@ -92,16 +87,12 @@ export const useCommentStore = create<CommentStore>((set, get) => ({
                 noiDung: comment.noiDung.trim(),
                 saoBinhLuan: Number(comment.saoBinhLuan)
             };
-            
             const newComment = await submitCommitApi(sanitizedComment);
-            
             const {comments} = get();
             set({
                 comments: [newComment, ...comments],
                 loading: false
             });
-            
-            console.log("Comment submitted successfully:", newComment);
             return true;
             
         } catch (error: any) {

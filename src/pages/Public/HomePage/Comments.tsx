@@ -3,8 +3,6 @@ import {
     Star,
     Heart,
     MessageCircle,
-    User,
-    Send,
     Filter,
     Award,
     Calendar,
@@ -12,18 +10,14 @@ import {
 } from "lucide-react";
 import { useCommentStore } from "@/store/comment.store";
 import { userAuthStore } from "@/store/auth.store";
-import type { User as UserType } from "@/interfaces/users.interface";
 import type { Comments } from "@/interfaces/comments.interface";
-import { Link } from "react-router-dom";
 
 interface ReviewsSectionProps {
-    // Có thể thêm maPhong nếu cần filter theo phòng cụ thể
     maPhong?: number;
-    // Kiểm tra user đã thuê phòng này chưa
     hasBookedThisRoom?: boolean;
 }
 
-export default function Comments({ maPhong, hasBookedThisRoom = false }: ReviewsSectionProps) {
+export default function Comments({ maPhong }: ReviewsSectionProps) {
     const { user, isAuthenticated } = userAuthStore();
     
     const { 
@@ -31,17 +25,14 @@ export default function Comments({ maPhong, hasBookedThisRoom = false }: Reviews
         users, 
         loading, 
         usersLoading, 
-        error, 
-        usersError, 
         fetchAll,
         submitComment 
     } = useCommentStore();
 
-    // Form state for new comment
     const [commentForm, setCommentForm] = useState({
         noiDung: "",
         saoBinhLuan: 5,
-        maPhong: maPhong || 1, // Default hoặc từ props
+        maPhong: maPhong || 1,
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -92,14 +83,13 @@ export default function Comments({ maPhong, hasBookedThisRoom = false }: Reviews
         });
     };
 
-    // Handle submit comment
     const handleSubmitComment = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!user || !commentForm.noiDung.trim()) return;
 
         setIsSubmitting(true);
         const newComment: Comments = {
-            id: Date.now(), // fake id local
+            id: Date.now(),
             maPhong: commentForm.maPhong,
             maNguoiBinhLuan: user.id,
             ngayBinhLuan: new Date().toISOString(),

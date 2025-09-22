@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { MapPin, Star, Heart, Eye, ChevronLeft, ChevronRight } from "lucide-react";
 import { useRoomStore } from "@/store/room.store";
 
@@ -91,7 +91,6 @@ export default function ListRoom() {
             phongTam: room.phongTam || 1
         }));
 
-        // Nhóm phòng theo vị trí
         const roomsByLocation = enhancedRooms.reduce((acc, room) => {
             const key = `${room.country}-${room.city}`;
             if (!acc[key]) {
@@ -219,7 +218,6 @@ export default function ListRoom() {
         </div>
     );
 
-    // Hiển thị loading state
     if (loading) {
         return (
             <section className="py-16 bg-gradient-to-br from-blue-50 via-white to-purple-50">
@@ -233,7 +231,6 @@ export default function ListRoom() {
         );
     }
 
-    // Hiển thị error state
     if (error) {
         return (
             <section className="py-16 bg-gradient-to-br from-blue-50 via-white to-purple-50">
@@ -252,7 +249,6 @@ export default function ListRoom() {
         );
     }
 
-    // Hiển thị khi không có areas hợp lệ (không có phòng nào có vị trí đầy đủ)
     if (areas.length === 0) {
         return (
             <section className="py-16 bg-gradient-to-br from-blue-50 via-white to-purple-50">
@@ -289,7 +285,6 @@ export default function ListRoom() {
                     </p>
                 </div>
 
-                {/* Chỉ hiển thị tabs khi có areas */}
                 {areas.length > 1 && (
                     <div className="flex flex-wrap justify-center gap-3 mb-8">
                         {areas.map((area) => (

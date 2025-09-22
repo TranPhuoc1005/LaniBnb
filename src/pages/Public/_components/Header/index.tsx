@@ -1,4 +1,4 @@
-import { Bed, Home, MessageCircle, Phone, User, CircleAlert, ChevronDown, Settings, Key, LogOut, Shield } from "lucide-react";
+import { Bed, Home, Phone, User, CircleAlert, ChevronDown, LogOut, Shield } from "lucide-react";
 import React, { useState, useRef, useEffect } from "react";
 import "./_header.scss";
 import { Link, useLocation, useNavigate } from "react-router-dom";

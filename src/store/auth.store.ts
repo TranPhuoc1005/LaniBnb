@@ -120,7 +120,6 @@ export const userAuthStore = create<AuthStore>()(
             },
 
             signOut: () => {
-                // Xóa token khỏi localStorage
                 localStorage.removeItem('accessToken');
                 
                 set({

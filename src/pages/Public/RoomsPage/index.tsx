@@ -1,5 +1,5 @@
-import React, { useState, useMemo, useEffect, Fragment } from "react";
-import { MapPin, Star, Heart, Eye, ChevronDown, Search, Filter, SlidersHorizontal, Grid, List, ChevronLeft, ChevronRight, X } from "lucide-react";
+import { useState, useMemo, useEffect, Fragment } from "react";
+import { MapPin, Star, Heart, Eye, SlidersHorizontal, Grid, List, ChevronLeft, ChevronRight, X } from "lucide-react";
 import "./_rooms.scss";
 import "../_components/scss/styles.scss";
 import { Link, useSearchParams } from "react-router-dom";
@@ -93,7 +93,6 @@ export default function ListRoomPage() {
         fetchLocations();
     }, [fetchRoomsWithLocation, fetchLocations]);
 
-    // Handle search params from URL
     useEffect(() => {
         if (urlLocationId && locations.length > 0) {
             const locationId = parseInt(urlLocationId);
@@ -138,7 +137,6 @@ export default function ListRoomPage() {
         return ["Tất cả", ...Array.from(new Set(cityList))];
     }, [locations]);
 
-    // Filter and sort with URL params consideration
     const filteredAndSortedRooms = useMemo(() => {
         let filtered = convertedRooms.filter(room => {
             // City filter
@@ -198,7 +196,6 @@ export default function ListRoomPage() {
         return filtered;
     }, [convertedRooms, selectedCity, sortBy, priceRange, searchTerm, urlLocationId, urlGuests, roomsWithLocation]);
 
-    // Pagination
     const totalPages = Math.ceil(filteredAndSortedRooms.length / roomsPerPage);
     const currentRooms = filteredAndSortedRooms.slice(
         (currentPage - 1) * roomsPerPage,
@@ -229,7 +226,6 @@ export default function ListRoomPage() {
         setCurrentPage(1);
     };
 
-    // Check if we have search results from booking
     const hasSearchParams = urlLocationId || urlCheckIn || urlCheckOut || urlGuests;
 
     if (error) {
@@ -360,7 +356,6 @@ export default function ListRoomPage() {
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
-            {/* Hero Section */}
             <div className="rooms_hero lg:h-[calc(100vh-70px)] text-white py-8 sm:py-12 lg:py-16 flex items-center justify-center">
                 <div className="max-w-7xl mx-auto px-4">
                     <div className="hero-content flex items-center flex-col">
@@ -375,7 +370,6 @@ export default function ListRoomPage() {
                         Khám phá {convertedRooms.length} phòng tại các điểm đến hấp dẫn nhất Việt Nam
                     </p>
 
-                    {/* Search Summary */}
                     {hasSearchParams && (
                         <div className="max-w-2xl mx-auto bg-white/10 backdrop-blur-sm rounded-xl p-4 mb-6">
                             <div className="text-center mb-3">
@@ -414,7 +408,6 @@ export default function ListRoomPage() {
             </div>
 
             <div className="mx-auto px-4 py-6 sm:py-8">
-                {/* Filters Section */}
                 <div className="max-w-7xl mx-auto bg-white rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6 mb-6 sm:mb-8">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                         <h2 className="text-lg sm:text-xl font-bold text-gray-900">
@@ -522,7 +515,6 @@ export default function ListRoomPage() {
                     </div>
                 </div>
 
-                {/* Rooms Grid */}
                 <div className={`grid gap-4 sm:gap-6 mb-6 sm:mb-8 max-w-7xl mx-auto ${
                     viewMode === 'grid' 
                         ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4' 
@@ -533,7 +525,6 @@ export default function ListRoomPage() {
                     ))}
                 </div>
 
-                {/* No results */}
                 {filteredAndSortedRooms.length === 0 && (
                     <div className="text-center py-12 sm:py-16 max-w-7xl mx-auto">
                         <div className="text-4xl sm:text-6xl mb-4">🏨</div>
@@ -570,7 +561,6 @@ export default function ListRoomPage() {
                     </div>
                 )}
 
-                {/* Pagination */}
                 {totalPages > 1 && (
                     <div className="flex justify-center items-center space-x-1 sm:space-x-2 max-w-7xl mx-auto">
                         <button
@@ -618,7 +608,6 @@ export default function ListRoomPage() {
                     </div>
                 )}
 
-                {/* Mobile Bottom Bar */}
                 <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 sm:hidden z-50">
                     <div className="flex items-center justify-between">
                         <div>
@@ -663,7 +652,6 @@ export default function ListRoomPage() {
                     </div>
                 </div>
 
-                {/* Mobile Spacer */}
                 <div className="h-20 sm:hidden"></div>
             </div>
         </div>

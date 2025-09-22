@@ -1,4 +1,4 @@
-import React, { type CSSProperties } from "react";
+import { type CSSProperties } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Pagination, Navigation, EffectFade } from "swiper/modules";
 import "swiper/css";

@@ -65,7 +65,6 @@ export default function UserProfilePage() {
     const [showDeleteModal, setShowDeleteModal] = useState<number | null>(null);
     const [deletingBookingId, setDeletingBookingId] = useState<number | null>(null);
     
-    // User edit state
     const [isEditing, setIsEditing] = useState(false);
     const [editingUser, setEditingUser] = useState<Partial<UserType>>({});
     const [avatarFile, setAvatarFile] = useState<File | null>(null);
@@ -75,7 +74,6 @@ export default function UserProfilePage() {
 
     useEffect(() => {
         if (isAuthenticated && user) {
-            // Try to load updated data from localStorage first
             const storedUser = loadUserFromStorage();
             if (storedUser) {
                 setCurrentUser(storedUser);
@@ -97,7 +95,6 @@ export default function UserProfilePage() {
         }
     }, [currentUser]);
 
-    // User edit functions
     const handleEditToggle = () => {
         if (isEditing) {
             setEditingUser(currentUser || {});
@@ -116,24 +113,20 @@ export default function UserProfilePage() {
     };
 
 
-    // Cải thiện phần xử lý avatar trong component
     const handleAvatarChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
         if (!file) return;
         
         console.log("Selected file:", file.name, "Type:", file.type, "Size:", file.size);
         
-        // Validate file size (5MB)
         if (file.size > 5 * 1024 * 1024) {
             alert('Kích thước ảnh quá lớn. Vui lòng chọn ảnh nhỏ hơn 5MB.');
-            // Reset input
             if (fileInputRef.current) {
                 fileInputRef.current.value = '';
             }
             return;
         }
 
-        // Simplified file type validation - focus on common formats
         const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
         const fileExtension = file.name.split('.').pop()?.toLowerCase();
         const allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
@@ -149,10 +142,8 @@ export default function UserProfilePage() {
             return;
         }
 
-        // Set the file without complex validation
         setAvatarFile(file);
         
-        // Create preview
         const reader = new FileReader();
         reader.onload = (e) => {
             setAvatarPreview(e.target?.result as string);
@@ -167,8 +158,6 @@ export default function UserProfilePage() {
         clearUserError();
 
         try {
-            console.log("Saving changes for user:", currentUser.id);
-            
             const updateData: Partial<UserType> = {
                 name: editingUser.name || currentUser.name,
                 email: editingUser.email || currentUser.email,
@@ -179,11 +168,9 @@ export default function UserProfilePage() {
             };
 
             if (avatarFile) {
-                console.log("Uploading avatar first...");
                 try {
                     const avatarUrl = await uploadAvatar(avatarFile);
                     if (avatarUrl) {
-                        console.log("Avatar uploaded successfully:", avatarUrl);
                         updateData.avatar = avatarUrl;
                     } else {
                         console.warn("Avatar upload returned null/empty");
@@ -193,14 +180,8 @@ export default function UserProfilePage() {
                     alert('Không thể tải lên ảnh đại diện, nhưng sẽ lưu thông tin khác.');
                 }
             }
-
-            console.log("Data to update:", updateData);
-
             success = await updateUserInfo(currentUser.id, updateData);
-            console.log("Update result:", success);
-
             if (success) {
-                console.log("User updated successfully");
                 setIsEditing(false);
                 setAvatarFile(null);
                 setAvatarPreview(null);
@@ -306,7 +287,6 @@ export default function UserProfilePage() {
         }
     });
 
-    // Redirect if not authenticated
     if (!isAuthenticated) {
         return (
             <div className="min-h-screen pt-20 bg-gray-50">
@@ -356,7 +336,6 @@ export default function UserProfilePage() {
     return (
         <div className="min-h-screen pt-20 bg-gray-50">
             <div className="max-w-6xl mx-auto p-6">
-                {/* Header */}
                 <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
                     <div>
                         <h1 className="text-3xl font-bold text-gray-900 mb-2">
@@ -367,7 +346,6 @@ export default function UserProfilePage() {
                         </p>
                     </div>
 
-                    {/* Tab Navigation */}
                     <div className="flex bg-white rounded-lg p-1 shadow-sm mt-4 md:mt-0">
                         {[
                             { key: "profile", label: "Thông tin", icon: User },
@@ -389,10 +367,8 @@ export default function UserProfilePage() {
                     </div>
                 </div>
 
-                {/* Profile Tab */}
                 {activeTab === "profile" && (
                     <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-                        {/* Profile Header */}
                         <div className="bg-gradient-to-r from-sky-500 to-blue-600 px-8 py-6">
                             <div className="flex items-center space-x-6">
                                 <div className="relative">
@@ -446,9 +422,7 @@ export default function UserProfilePage() {
                             </div>
                         </div>
 
-                        {/* Profile Content */}
                         <div className="p-8">
-                            {/* Error Display */}
                             {userError && (
                                 <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
                                     <div className="flex items-center space-x-2">
@@ -458,7 +432,6 @@ export default function UserProfilePage() {
                                 </div>
                             )}
 
-                            {/* Success Display */}
                             {updateSuccess && (
                                 <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
                                     <div className="flex items-center space-x-2">
@@ -468,7 +441,6 @@ export default function UserProfilePage() {
                                 </div>
                             )}
 
-                            {/* Edit Controls */}
                             <div className="flex justify-between items-center mb-8">
                                 <h3 className="text-lg font-semibold text-gray-900">Thông tin cá nhân</h3>
                                 <div className="flex space-x-3">
@@ -509,9 +481,7 @@ export default function UserProfilePage() {
                                 </div>
                             </div>
 
-                            {/* Profile Fields */}
                             <div className="grid md:grid-cols-2 gap-6">
-                                {/* Name */}
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-2">
                                         Họ và tên
@@ -532,7 +502,6 @@ export default function UserProfilePage() {
                                     )}
                                 </div>
 
-                                {/* Email */}
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-2">
                                         Email
@@ -553,7 +522,6 @@ export default function UserProfilePage() {
                                     )}
                                 </div>
 
-                                {/* Phone */}
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-2">
                                         Số điện thoại
@@ -574,7 +542,6 @@ export default function UserProfilePage() {
                                     )}
                                 </div>
 
-                                {/* Birthday */}
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-2">
                                         Ngày sinh
@@ -599,7 +566,6 @@ export default function UserProfilePage() {
                                     )}
                                 </div>
 
-                                {/* Gender */}
                                 <div className="md:col-span-2">
                                     <label className="block text-sm font-medium text-gray-700 mb-2">
                                         Giới tính
@@ -642,17 +608,14 @@ export default function UserProfilePage() {
                     </div>
                 )}
 
-                {/* Bookings Tab */}
                 {activeTab === "bookings" && (
                     <div>
-                        {/* Booking Filters */}
                         <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
                             <div className="flex flex-col md:flex-row md:items-center md:justify-between">
                                 <h3 className="text-lg font-semibold text-gray-900 mb-4 md:mb-0">
                                     Lịch sử đặt phòng ({filteredBookings.length} đặt phòng)
                                 </h3>
                                 
-                                {/* Filter Tabs */}
                                 <div className="flex bg-gray-100 rounded-lg p-1">
                                     {[
                                         { key: "all", label: "Tất cả", count: bookings.length },
@@ -675,7 +638,6 @@ export default function UserProfilePage() {
                             </div>
                         </div>
 
-                        {/* Error Display */}
                         {bookingError && (
                             <div className="bg-white rounded-xl shadow-sm p-12 text-center">
                                 <AlertCircle className="w-16 h-16 text-red-400 mx-auto mb-4" />
@@ -705,7 +667,6 @@ export default function UserProfilePage() {
                             </div>
                         )}
 
-                        {/* Bookings List */}
                         {!bookingError && (
                             <>
                                 {filteredBookings.length === 0 ? (
@@ -750,7 +711,6 @@ export default function UserProfilePage() {
                                                         />
                                                     </div>
 
-                                                    {/* Booking Details */}
                                                     <div className="md:w-2/3 p-6">
                                                         <div className="flex flex-col md:flex-row md:items-start md:justify-between mb-4">
                                                             <div className="flex-1">
@@ -804,7 +764,6 @@ export default function UserProfilePage() {
                                                             </div>
                                                         </div>
 
-                                                        {/* Dates and Guests */}
                                                         <div className="grid md:grid-cols-3 gap-4 mb-4">
                                                             <div className="flex items-center space-x-2">
                                                                 <Calendar className="w-5 h-5 text-gray-400" />
@@ -841,7 +800,6 @@ export default function UserProfilePage() {
                                                             </div>
                                                         </div>
 
-                                                        {/* Room Amenities */}
                                                         {booking.room && (
                                                             <div className="flex flex-wrap gap-2 mb-4">
                                                                 {booking.room.wifi && (
@@ -872,7 +830,6 @@ export default function UserProfilePage() {
                                                             </div>
                                                         )}
 
-                                                        {/* Actions */}
                                                         <div className="flex flex-wrap gap-3">
                                                             <button 
                                                                 onClick={() => navigate(`/room-detail/${booking.maPhong}`)}
@@ -905,7 +862,6 @@ export default function UserProfilePage() {
                 )}
             </div>
 
-            {/* Delete Confirmation Modal */}
             {showDeleteModal && (
                 <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
                     <div className="bg-white rounded-2xl max-w-md w-full p-6 transform transition-all">

@@ -40,7 +40,6 @@ export const useUserStore = create<UserStore>((set, get) => ({
     setUpdateSuccess: (success) => set({ updateSuccess: success }),
     clearError: () => set({ error: null, updateSuccess: false }),
 
-    // Load user from localStorage
     loadUserFromStorage: () => {
         try {
             const authStorage = localStorage.getItem("auth-storage");
@@ -88,7 +87,6 @@ export const useUserStore = create<UserStore>((set, get) => ({
             const updatedUser = await updateUserApi(userId, userData);
             console.log("Updated user response:", updatedUser);
 
-            // Always update local state even if API might not persist
             const currentUser = get().currentUser;
             const finalUser = currentUser ? { ...currentUser, ...userData } : updatedUser;
 
@@ -98,7 +96,6 @@ export const useUserStore = create<UserStore>((set, get) => ({
                 updateSuccess: true,
             });
 
-            // Also try to sync with localStorage if auth store uses it
             try {
                 const authStorage = localStorage.getItem("auth-storage");
                 if (authStorage) {
