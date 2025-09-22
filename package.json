@@ -12,6 +12,7 @@
   "dependencies": {
     "@easepick/core": "^1.2.1",
     "@easepick/range-plugin": "^1.2.1",
+    "@radix-ui/react-label": "^2.1.7",
     "@radix-ui/react-slot": "^1.2.3",
     "@reduxjs/toolkit": "^2.9.0",
     "@tailwindcss/vite": "^4.1.13",

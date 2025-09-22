@@ -18,8 +18,10 @@ export interface RegisterRequest {
 export interface AuthResponse {
     statusCode: number;
     message: string;
+    token?: string;
     content: {
         user: User;
+        accessToken?: string;
         token?: string;
     };
     dateTime?: string;

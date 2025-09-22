@@ -9,6 +9,7 @@ type AuthStore = {
     loading: boolean;
     error: string | null;
     isAuthenticated: boolean;
+    accessToken?: string; 
 
     setUser: (user: User | null) => void;
     setLoading: (loading: boolean) => void;
@@ -52,7 +53,8 @@ export const userAuthStore = create<AuthStore>()(
                             user: userData,
                             isAuthenticated: true,
                             loading: false,
-                            error: null
+                            error: null,
+                            accessToken: token
                         });
                         return true;
                     } else {
@@ -125,7 +127,8 @@ export const userAuthStore = create<AuthStore>()(
                 set({
                     user: null,
                     isAuthenticated: false,
-                    error: null
+                    error: null,
+                    accessToken: undefined
                 });
             },
 
@@ -135,7 +138,8 @@ export const userAuthStore = create<AuthStore>()(
                     user: null,
                     loading: false,
                     error: null,
-                    isAuthenticated: false
+                    isAuthenticated: false,
+                    accessToken: undefined,
                 });
             }
         }),
