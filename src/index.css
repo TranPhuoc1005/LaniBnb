@@ -135,8 +135,8 @@ h1.text-white, h2.text-white {
 }
 
 .swiper {
-    pointer-events: none;
-    overflow: hidden;
+    /* pointer-events: none;
+    overflow: hidden; */
 }
 
 .hero-title {
