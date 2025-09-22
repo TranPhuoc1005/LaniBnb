@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
     Star,
     Heart,
@@ -12,13 +12,8 @@ import { useCommentStore } from "@/store/comment.store";
 import { userAuthStore } from "@/store/auth.store";
 import type { Comments } from "@/interfaces/comments.interface";
 
-interface ReviewsSectionProps {
-    maPhong?: number;
-    hasBookedThisRoom?: boolean;
-}
-
 export default function Comments() {
-    const { user, isAuthenticated } = userAuthStore();
+    const { isAuthenticated } = userAuthStore();
     
     const { 
         comments, 
