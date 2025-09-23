@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
     Phone,
     Mail,
@@ -34,30 +34,6 @@ export default function ContactPage() {
             ...prev,
             [name]: value
         }));
-    };
-
-    const handleSubmit = async (e:any) => {
-        e.preventDefault();
-        setIsSubmitting(true);
-        
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        
-        console.log('Form data:', formData);
-        setIsSubmitting(false);
-        setIsSubmitted(true);
-        
-        // Reset form after 3 seconds
-        setTimeout(() => {
-            setIsSubmitted(false);
-            setFormData({
-                name: '',
-                email: '',
-                phone: '',
-                subject: '',
-                message: ''
-            });
-        }, 3000);
     };
 
     const contactInfo = [
@@ -302,7 +278,6 @@ export default function ContactPage() {
                                 </div>
                             </div>
 
-                            {/* Quick Actions */}
                             <div className="grid grid-cols-2 gap-4">
                                 <button className="bg-green-500 hover:bg-green-600 p-4 rounded-xl font-semibold transition-all border border-2 transform hover:scale-105 flex items-center justify-center gap-2 text-white">
                                     <MessageCircle className="w-5 h-5" />
@@ -318,7 +293,6 @@ export default function ContactPage() {
                 </div>
             </section>
 
-            {/* FAQ Section */}
             <section className="py-16 px-6 bg-white/5">
                 <div className="max-w-4xl mx-auto text-center">
                     <h2 className="text-3xl font-bold mb-6">Câu hỏi thường gặp</h2>
