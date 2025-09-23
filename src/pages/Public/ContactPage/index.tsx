@@ -36,6 +36,7 @@ export default function ContactPage() {
         }));
     };
 
+
     const contactInfo = [
         {
             icon: <Phone className="w-6 h-6" />,
