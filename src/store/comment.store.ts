@@ -57,8 +57,6 @@ export const useCommentStore = create<CommentStore>((set, get) => ({
     },
 
     fetchUsers: async () => {
-        const { users, usersLoading } = get();
-        if (usersLoading || users.length > 0) return;
         set({usersLoading: true, usersError: null});
         try {
             const data = await getUserApi();

@@ -150,7 +150,7 @@ export default function Comments() {
     }
 
     return (
-        <section id="comments" className="py-20 bg-gradient-to-br from-gray-50 via-blue-50 to-purple-50 relative overflow-hidden">
+        <section id="comments" className="py-20 bg-gradient-to-br from-gray-50 via-blue-50 to-purple-50 relative overflow-hidden" data-aos="fade-up">
             <div className="absolute inset-0 opacity-30">
                 <div className="absolute top-20 left-10 w-32 h-32 bg-blue-200 rounded-full blur-3xl animate-pulse"></div>
                 <div className="absolute bottom-20 right-10 w-40 h-40 bg-purple-200 rounded-full blur-3xl animate-pulse delay-1000"></div>

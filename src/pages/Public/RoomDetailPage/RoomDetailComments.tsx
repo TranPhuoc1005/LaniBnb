@@ -21,17 +21,15 @@ interface RoomDetailCommentsProps {
     canComment?: boolean;
 }
 
-export default function RoomDetailComments({ maPhong, canComment = true }: RoomDetailCommentsProps) {
+export default function RoomDetailComments({
+    maPhong,
+    canComment = true,
+}: RoomDetailCommentsProps) {
     const { user, isAuthenticated } = userAuthStore();
     const { bookings, fetchUserBookings } = useBookingStore();
-    
-    const { 
-        comments, 
-        users, 
-        error, 
-        fetchAll,
-        submitComment 
-    } = useCommentStore();
+
+    const { comments, users, error, fetchAll, submitComment } =
+        useCommentStore();
 
     const [commentForm, setCommentForm] = useState({
         noiDung: "",
@@ -40,7 +38,9 @@ export default function RoomDetailComments({ maPhong, canComment = true }: RoomD
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const [likedReviews, setLikedReviews] = useState<Set<number | string>>(new Set());
+    const [likedReviews, setLikedReviews] = useState<Set<number | string>>(
+        new Set()
+    );
     const [filterRating, setFilterRating] = useState<number | null>(null);
 
     useEffect(() => {
@@ -51,9 +51,11 @@ export default function RoomDetailComments({ maPhong, canComment = true }: RoomD
     }, [isAuthenticated, user?.id]);
 
     const roomComments: Comments[] = comments
-        .filter(comment => comment.maPhong === maPhong)
+        .filter((comment) => comment.maPhong === maPhong)
         .map((comment) => {
-            const userInfo = users.find(u => u.id === comment.maNguoiBinhLuan);
+            const userInfo = users.find(
+                (u) => u.id === comment.maNguoiBinhLuan
+            );
             return {
                 ...comment,
                 tenNguoiBinhLuan: userInfo?.name || "Người dùng",
@@ -62,16 +64,21 @@ export default function RoomDetailComments({ maPhong, canComment = true }: RoomD
         });
 
     const hasBookedThisRoom = useMemo(() => {
-        return isAuthenticated && user ? 
-            bookings.some(booking => 
-                booking.maPhong === maPhong && 
-                booking.maNguoiDung === user.id
-            ) : false;
+        return isAuthenticated && user
+            ? bookings.some(
+                  (booking) =>
+                      booking.maPhong === maPhong &&
+                      booking.maNguoiDung === user.id
+              )
+            : false;
     }, [isAuthenticated, user?.id, bookings, maPhong]);
 
     const hasAlreadyCommented = useMemo(() => {
-        return isAuthenticated && user ?
-            roomComments.some(comment => comment.maNguoiBinhLuan === user.id) : false;
+        return isAuthenticated && user
+            ? roomComments.some(
+                  (comment) => comment.maNguoiBinhLuan === user.id
+              )
+            : false;
     }, [isAuthenticated, user?.id, roomComments]);
 
     const handleLike = useCallback((id: number | string) => {
@@ -86,28 +93,35 @@ export default function RoomDetailComments({ maPhong, canComment = true }: RoomD
         });
     }, []);
 
-    const handleSubmitComment = useCallback(async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!user || !commentForm.noiDung.trim()) return;
+    const handleSubmitComment = useCallback(
+        async (e: React.FormEvent) => {
+            e.preventDefault();
+            if (!user || !commentForm.noiDung.trim()) return;
 
-        setIsSubmitting(true);
-        const newComment: Comments = {
-            id: Date.now(),
-            maPhong: commentForm.maPhong,
-            maNguoiBinhLuan: user.id,
-            ngayBinhLuan: new Date().toISOString(),
-            noiDung: commentForm.noiDung.trim(),
-            saoBinhLuan: commentForm.saoBinhLuan,
-            tenNguoiBinhLuan: user.name,
-            avatar: user.avatar || "",
-        };
+            setIsSubmitting(true);
+            const newComment: Comments = {
+                id: Date.now(),
+                maPhong: commentForm.maPhong,
+                maNguoiBinhLuan: user.id,
+                ngayBinhLuan: new Date().toISOString(),
+                noiDung: commentForm.noiDung.trim(),
+                saoBinhLuan: commentForm.saoBinhLuan,
+                tenNguoiBinhLuan: user.name,
+                avatar: user.avatar || "",
+            };
 
-        const success = await submitComment(newComment);
-        if (success) {
-            setCommentForm({ noiDung: "", saoBinhLuan: 5, maPhong: commentForm.maPhong });
-        }
-        setIsSubmitting(false);
-    }, [user, commentForm, submitComment]);
+            const success = await submitComment(newComment);
+            if (success) {
+                setCommentForm({
+                    noiDung: "",
+                    saoBinhLuan: 5,
+                    maPhong: commentForm.maPhong,
+                });
+            }
+            setIsSubmitting(false);
+        },
+        [user, commentForm, submitComment]
+    );
 
     const formatDate = (dateString: string) => {
         return new Date(dateString).toLocaleDateString("vi-VN", {
@@ -118,61 +132,74 @@ export default function RoomDetailComments({ maPhong, canComment = true }: RoomD
     };
 
     const handleRatingChange = useCallback((rating: number) => {
-        setCommentForm(prev => ({ ...prev, saoBinhLuan: rating }));
+        setCommentForm((prev) => ({ ...prev, saoBinhLuan: rating }));
     }, []);
 
-    const renderStars = useCallback((
-        rating: number,
-        interactive = false,
-        onRate?: (rating: number) => void
-    ) => {
-        return Array.from({ length: 5 }, (_, i) => {
-            if (interactive) {
-                return (
-                    <button
-                        key={i}
-                        type="button"
-                        onClick={() => onRate?.(i + 1)}
-                        className={`${
-                            i < rating ? "text-yellow-400" : "text-gray-300"
-                        } hover:text-yellow-400 transition-colors cursor-pointer text-lg`}
-                    >
-                        ★
-                    </button>
-                );
-            } else {
-                return (
-                    <span
-                        key={i}
-                        className={`${
-                            i < rating ? "text-yellow-400" : "text-gray-300"
-                        } text-lg`}
-                    >
-                        ★
-                    </span>
-                );
-            }
-        });
-    }, []);
+    const renderStars = useCallback(
+        (
+            rating: number,
+            interactive = false,
+            onRate?: (rating: number) => void
+        ) => {
+            return Array.from({ length: 5 }, (_, i) => {
+                if (interactive) {
+                    return (
+                        <button
+                            key={i}
+                            type="button"
+                            onClick={() => onRate?.(i + 1)}
+                            className={`${
+                                i < rating ? "text-yellow-400" : "text-gray-300"
+                            } hover:text-yellow-400 transition-colors cursor-pointer text-lg`}
+                        >
+                            ★
+                        </button>
+                    );
+                } else {
+                    return (
+                        <span
+                            key={i}
+                            className={`${
+                                i < rating ? "text-yellow-400" : "text-gray-300"
+                            } text-lg`}
+                        >
+                            ★
+                        </span>
+                    );
+                }
+            });
+        },
+        []
+    );
 
     const filteredReviews = filterRating
         ? roomComments.filter((review) => review.saoBinhLuan === filterRating)
         : roomComments;
 
-    const averageRating = roomComments.length > 0
-        ? roomComments.reduce((sum, review) => sum + review.saoBinhLuan, 0) / roomComments.length
-        : 0;
-        
+    const averageRating =
+        roomComments.length > 0
+            ? roomComments.reduce(
+                  (sum, review) => sum + review.saoBinhLuan,
+                  0
+              ) / roomComments.length
+            : 0;
+
     const ratingDistribution = [5, 4, 3, 2, 1].map((rating) => ({
         rating,
         count: roomComments.filter((r) => r.saoBinhLuan === rating).length,
-        percentage: roomComments.length > 0
-            ? (roomComments.filter((r) => r.saoBinhLuan === rating).length / roomComments.length) * 100
-            : 0,
+        percentage:
+            roomComments.length > 0
+                ? (roomComments.filter((r) => r.saoBinhLuan === rating).length /
+                      roomComments.length) *
+                  100
+                : 0,
     }));
 
     return (
-        <div id="reviews" className="bg-white rounded-2xl shadow-lg overflow-hidden">
+        <div
+            id="reviews"
+            className="bg-white rounded-2xl shadow-lg overflow-hidden"
+        >
             <div className="p-6">
                 <div className="flex items-center justify-between mb-6">
                     {/* Hiển thị title và số lượng đánh giá */}
@@ -197,7 +224,8 @@ export default function RoomDetailComments({ maPhong, canComment = true }: RoomD
                         <div className="flex items-center space-x-2">
                             <AlertTriangle className="w-5 h-5 text-red-600" />
                             <p className="text-red-700 text-sm">
-                                Tính năng bình luận đã bị vô hiệu hóa cho phòng này.
+                                Tính năng bình luận đã bị vô hiệu hóa cho phòng
+                                này.
                             </p>
                         </div>
                     </div>
@@ -213,24 +241,27 @@ export default function RoomDetailComments({ maPhong, canComment = true }: RoomD
                     </div>
                 )}
 
-                {isAuthenticated && hasBookedThisRoom && hasAlreadyCommented && (
-                    <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
-                        <div className="flex items-center space-x-2">
-                            <MessageCircle className="w-5 h-5 text-green-600" />
-                            <p className="text-green-700 text-sm">
-                                Cảm ơn bạn đã chia sẻ đánh giá về phòng này!
-                            </p>
+                {isAuthenticated &&
+                    hasBookedThisRoom &&
+                    hasAlreadyCommented && (
+                        <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
+                            <div className="flex items-center space-x-2">
+                                <MessageCircle className="w-5 h-5 text-green-600" />
+                                <p className="text-green-700 text-sm">
+                                    Cảm ơn bạn đã chia sẻ đánh giá về phòng này!
+                                </p>
+                            </div>
                         </div>
-                    </div>
-                )}
+                    )}
 
                 {!isAuthenticated && (
                     <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
                         <div className="flex items-center justify-between">
                             <p className="text-blue-700 text-sm">
-                                Đăng nhập để xem đầy đủ đánh giá và có thể viết đánh giá sau khi thuê phòng.
+                                Đăng nhập để xem đầy đủ đánh giá và có thể viết
+                                đánh giá sau khi thuê phòng.
                             </p>
-                            <Link 
+                            <Link
                                 to="/auth/signin"
                                 className="text-blue-600 hover:text-blue-700 font-medium text-sm"
                             >
@@ -241,75 +272,93 @@ export default function RoomDetailComments({ maPhong, canComment = true }: RoomD
                 )}
 
                 {/* Comment Form - Only show if comments are enabled */}
-                {canComment && isAuthenticated && hasBookedThisRoom && !hasAlreadyCommented && (
-                    <div className="mb-6 p-4 bg-gray-50 rounded-lg border">
-                        <h4 className="font-semibold text-gray-900 mb-4">Chia sẻ trải nghiệm của bạn</h4>
-                        
-                        {error && (
-                            <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
-                                <p className="text-red-600 text-sm">{error}</p>
-                            </div>
-                        )}
+                {canComment &&
+                    isAuthenticated &&
+                    hasBookedThisRoom &&
+                    !hasAlreadyCommented && (
+                        <div className="mb-6 p-4 bg-gray-50 rounded-lg border">
+                            <h4 className="font-semibold text-gray-900 mb-4">
+                                Chia sẻ trải nghiệm của bạn
+                            </h4>
 
-                        <form onSubmit={handleSubmitComment} className="space-y-4">
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    Đánh giá sao
-                                </label>
-                                <div className="flex items-center space-x-1">
-                                    {renderStars(
-                                        commentForm.saoBinhLuan,
-                                        true,
-                                        handleRatingChange
-                                    )}
-                                    <span className="ml-2 text-sm text-gray-600">
-                                        ({commentForm.saoBinhLuan}/5)
-                                    </span>
+                            {error && (
+                                <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+                                    <p className="text-red-600 text-sm">
+                                        {error}
+                                    </p>
                                 </div>
-                            </div>
+                            )}
 
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    Nội dung đánh giá
-                                </label>
-                                <textarea
-                                    value={commentForm.noiDung}
-                                    onChange={(e) => setCommentForm(prev => ({ ...prev, noiDung: e.target.value }))}
-                                    placeholder="Chia sẻ trải nghiệm của bạn về phòng này..."
-                                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-                                    rows={4}
-                                    required
-                                />
-                            </div>
+                            <form
+                                onSubmit={handleSubmitComment}
+                                className="space-y-4"
+                            >
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        Đánh giá sao
+                                    </label>
+                                    <div className="flex items-center space-x-1">
+                                        {renderStars(
+                                            commentForm.saoBinhLuan,
+                                            true,
+                                            handleRatingChange
+                                        )}
+                                        <span className="ml-2 text-sm text-gray-600">
+                                            ({commentForm.saoBinhLuan}/5)
+                                        </span>
+                                    </div>
+                                </div>
 
-                            <div className="flex justify-end space-x-3">
-                                <button
-                                    type="button"
-                                    className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-                                >
-                                    Hủy
-                                </button>
-                                <button
-                                    type="submit"
-                                    disabled={!commentForm.noiDung.trim() || isSubmitting}
-                                    className="px-6 py-2 bg-gradient-to-r from-sky-300 to-blue-300 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
-                                >
-                                    {isSubmitting ? (
-                                        <>
-                                            <Loader2 className="w-4 h-4 animate-spin" />
-                                            <span>Đang gửi...</span>
-                                        </>
-                                    ) : (
-                                        <>
-                                            <Send className="w-4 h-4" />
-                                            <span>Gửi đánh giá</span>
-                                        </>
-                                    )}
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                )}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        Nội dung đánh giá
+                                    </label>
+                                    <textarea
+                                        value={commentForm.noiDung}
+                                        onChange={(e) =>
+                                            setCommentForm((prev) => ({
+                                                ...prev,
+                                                noiDung: e.target.value,
+                                            }))
+                                        }
+                                        placeholder="Chia sẻ trải nghiệm của bạn về phòng này..."
+                                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                                        rows={4}
+                                        required
+                                    />
+                                </div>
+
+                                <div className="flex justify-end space-x-3">
+                                    <button
+                                        type="button"
+                                        className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                                    >
+                                        Hủy
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        disabled={
+                                            !commentForm.noiDung.trim() ||
+                                            isSubmitting
+                                        }
+                                        className="px-6 py-2 bg-gradient-to-r from-sky-300 to-blue-300 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
+                                    >
+                                        {isSubmitting ? (
+                                            <>
+                                                <Loader2 className="w-4 h-4 animate-spin" />
+                                                <span>Đang gửi...</span>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Send className="w-4 h-4" />
+                                                <span>Gửi đánh giá</span>
+                                            </>
+                                        )}
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    )}
 
                 {roomComments.length > 0 ? (
                     <div className="grid lg:grid-cols-3 gap-6">
@@ -373,7 +422,9 @@ export default function RoomDetailComments({ maPhong, canComment = true }: RoomD
                                     {[5, 4, 3, 2, 1].map((rating) => (
                                         <button
                                             key={rating}
-                                            onClick={() => setFilterRating(rating)}
+                                            onClick={() =>
+                                                setFilterRating(rating)
+                                            }
                                             className={`w-full text-left px-3 py-2 rounded-lg transition-colors flex items-center ${
                                                 filterRating === rating
                                                     ? "bg-blue-100 text-blue-700"
@@ -398,77 +449,100 @@ export default function RoomDetailComments({ maPhong, canComment = true }: RoomD
                         <div className="lg:col-span-2 max-h-[735px] overflow-y-auto">
                             <div className="space-y-4">
                                 {filteredReviews
-                                    .sort((a, b) => new Date(b.ngayBinhLuan).getTime() - new Date(a.ngayBinhLuan).getTime())
+                                    .sort(
+                                        (a, b) =>
+                                            new Date(b.ngayBinhLuan).getTime() -
+                                            new Date(a.ngayBinhLuan).getTime()
+                                    )
                                     .map((review, index) => (
-                                    <div
-                                        key={review.id ?? `review-${index}`}
-                                        className="bg-white border border-gray-200 rounded-xl p-4 hover:shadow-md transition-all duration-300"
-                                    >
-                                        <div className="flex items-start space-x-4">
-                                            <div className="w-10 h-10 bg-gradient-to-r from-sky-300 to-blue-300 rounded-full flex items-center justify-center text-white font-semibold flex-shrink-0">
-                                                {review.avatar ? (
-                                                    <img
-                                                        src={review.avatar}
-                                                        alt=""
-                                                        className="w-full h-full rounded-full object-cover"
-                                                    />
-                                                ) : (
-                                                    (review.tenNguoiBinhLuan || "User")
-                                                        .charAt(0)
-                                                        .toUpperCase()
-                                                )}
-                                            </div>
-
-                                            <div className="flex-1 overflow-hidden">
-                                                <div className="flex items-start justify-between mb-3">
-                                                    <div>
-                                                        <div className="flex items-center space-x-2 mb-1">
-                                                            <h5 className="font-semibold text-gray-900">
-                                                                {review.tenNguoiBinhLuan || "Người dùng"}
-                                                            </h5>
-                                                            <Award className="w-4 h-4 text-blue-500" />
-                                                        </div>
-                                                        <div className="flex items-center space-x-4 text-sm text-gray-500">
-                                                            <div className="flex items-center space-x-1">
-                                                                <Calendar className="w-3 h-3" />
-                                                                <span>
-                                                                    {formatDate(review.ngayBinhLuan)}
-                                                                </span>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div className="flex items-center space-x-1">
-                                                        {renderStars(review.saoBinhLuan)}
-                                                    </div>
+                                        <div
+                                            key={review.id ?? `review-${index}`}
+                                            className="bg-white border border-gray-200 rounded-xl p-4 hover:shadow-md transition-all duration-300"
+                                        >
+                                            <div className="flex items-start space-x-4">
+                                                <div className="w-10 h-10 bg-gradient-to-r from-sky-300 to-blue-300 rounded-full flex items-center justify-center text-white font-semibold flex-shrink-0">
+                                                    {review.avatar ? (
+                                                        <img
+                                                            src={review.avatar}
+                                                            alt=""
+                                                            className="w-full h-full rounded-full object-cover"
+                                                        />
+                                                    ) : (
+                                                        (
+                                                            review.tenNguoiBinhLuan ||
+                                                            "User"
+                                                        )
+                                                            .charAt(0)
+                                                            .toUpperCase()
+                                                    )}
                                                 </div>
 
-                                                <p className="text-gray-700 mb-3 leading-relaxed">
-                                                    "{review.noiDung}"
-                                                </p>
+                                                <div className="flex-1 overflow-hidden">
+                                                    <div className="flex items-start justify-between mb-3">
+                                                        <div>
+                                                            <div className="flex items-center space-x-2 mb-1">
+                                                                <h5 className="font-semibold text-gray-900">
+                                                                    {review.tenNguoiBinhLuan ||
+                                                                        "Người dùng"}
+                                                                </h5>
+                                                                <Award className="w-4 h-4 text-blue-500" />
+                                                            </div>
+                                                            <div className="flex items-center space-x-4 text-sm text-gray-500">
+                                                                <div className="flex items-center space-x-1">
+                                                                    <Calendar className="w-3 h-3" />
+                                                                    <span>
+                                                                        {formatDate(
+                                                                            review.ngayBinhLuan
+                                                                        )}
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div className="flex items-center space-x-1">
+                                                            {renderStars(
+                                                                review.saoBinhLuan
+                                                            )}
+                                                        </div>
+                                                    </div>
 
-                                                <div className="flex items-center justify-between">
-                                                    <button
-                                                        onClick={() => handleLike(review.id ?? `review-${index}`)}
-                                                        className={`flex items-center space-x-2 text-sm transition-colors ${
-                                                            likedReviews.has(review.id ?? `review-${index}`)
-                                                                ? "text-red-500"
-                                                                : "text-gray-600 hover:text-red-500"
-                                                        }`}
-                                                    >
-                                                        <Heart
-                                                            className={`w-4 h-4 ${
-                                                                likedReviews.has(review.id ?? `review-${index}`)
-                                                                    ? "fill-current"
-                                                                    : ""
+                                                    <p className="text-gray-700 mb-3 leading-relaxed">
+                                                        "{review.noiDung}"
+                                                    </p>
+
+                                                    <div className="flex items-center justify-between">
+                                                        <button
+                                                            onClick={() =>
+                                                                handleLike(
+                                                                    review.id ??
+                                                                        `review-${index}`
+                                                                )
+                                                            }
+                                                            className={`flex items-center space-x-2 text-sm transition-colors ${
+                                                                likedReviews.has(
+                                                                    review.id ??
+                                                                        `review-${index}`
+                                                                )
+                                                                    ? "text-red-500"
+                                                                    : "text-gray-600 hover:text-red-500"
                                                             }`}
-                                                        />
-                                                        <span>Hữu ích</span>
-                                                    </button>
+                                                        >
+                                                            <Heart
+                                                                className={`w-4 h-4 ${
+                                                                    likedReviews.has(
+                                                                        review.id ??
+                                                                            `review-${index}`
+                                                                    )
+                                                                        ? "fill-current"
+                                                                        : ""
+                                                                }`}
+                                                            />
+                                                            <span>Hữu ích</span>
+                                                        </button>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                ))}
+                                    ))}
                             </div>
                         </div>
                     </div>
@@ -479,7 +553,8 @@ export default function RoomDetailComments({ maPhong, canComment = true }: RoomD
                             Chưa có đánh giá nào
                         </h3>
                         <p className="text-gray-600 mb-4">
-                            Hãy là người đầu tiên chia sẻ trải nghiệm về phòng này!
+                            Hãy là người đầu tiên chia sẻ trải nghiệm về phòng
+                            này!
                         </p>
                     </div>
                 )}

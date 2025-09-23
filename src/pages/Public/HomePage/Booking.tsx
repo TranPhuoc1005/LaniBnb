@@ -107,7 +107,7 @@ export default function Booking() {
     const isSearchDisabled = !location || !dateRef.current?.value || isSearching;
 
     return (
-        <section className="relative z-10 pb-16">
+        <section className="relative z-10 pb-16" data-aos="fade-up">
             <div className="max-w-6xl mx-auto px-4 sm:px-6 text-center">
                 <div className="mb-6">
                     <h2 className="text-3xl font-bold mb-6">Đặt Phòng Khách Sạn</h2>

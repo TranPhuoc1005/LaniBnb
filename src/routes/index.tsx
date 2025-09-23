@@ -11,7 +11,7 @@ const UserProfilePage = lazy(() => import("../pages/Public/UserProfilePage"));
 const LoginPage = lazy(() => import("../pages/Public/LoginPage/"));
 
 const withSuspense = (Component: LazyExoticComponent<FC>) => {
-  return <Suspense fallback={<LoadingUI/>}><Component/></Suspense>
+  return <Suspense fallback={<LoadingUI />}><Component/></Suspense>
 }
 
 export const routes: RouteObject[] = [

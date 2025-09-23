@@ -1,21 +1,22 @@
 import { MapPin, Phone, Mail, Facebook, Instagram, Twitter, Youtube, Star, Shield, Clock, Award} from "lucide-react";
+import { useEffect } from "react";
+import { useLocationStore } from "@/store/location.store";
 
 export default function Footer() {
+    const { locations, fetchLocations } = useLocationStore();
+    
+    useEffect(() => {
+        fetchLocations();
+    }, [fetchLocations]);
+
     const quickLinks = [
-        { name: "Trang chủ", href: "#home" },
-        { name: "Phòng nghỉ", href: "#rooms" },
-        { name: "Bình luận", href: "#comments" },
-        { name: "Liên hệ", href: "#contact" }
+        { name: "Trang chủ", href: "/" },
+        { name: "Giới thiệu", href: "/about" },
+        { name: "Phòng nghỉ", href: "/rooms" },
+        { name: "Thông tin cá nhân", href: "/info" }
     ];
 
-    const destinations = [
-        "Hồ Chí Minh",
-        "Đà Nẵng", 
-        "Nha Trang",
-        "Đà Lạt",
-        "Phú Quốc",
-        "Hội An"
-    ];
+    const popularDestinations = locations.slice(0, 6);
 
     const achievements = [
         { icon: <Star className="w-5 h-5" />, text: "4.8/5 Đánh giá", subtext: "Từ 2,456 khách hàng" },
@@ -100,14 +101,14 @@ export default function Footer() {
                         <div>
                             <h3 className="text-lg font-semibold mb-6 text-white">Điểm đến phổ biến</h3>
                             <ul className="space-y-3">
-                                {destinations.map((destination, index) => (
-                                    <li key={index}>
+                                {popularDestinations.map((location, index) => (
+                                    <li key={location.id}>
                                         <a 
                                             href="#" 
                                             className="text-white hover:text-purple-400 transition-colors duration-200 flex items-center group"
                                         >
                                             <MapPin className="w-3 h-3 mr-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
-                                            {destination}
+                                            {location.tinhThanh}
                                         </a>
                                     </li>
                                 ))}

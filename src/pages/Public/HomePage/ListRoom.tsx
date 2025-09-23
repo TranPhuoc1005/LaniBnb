@@ -275,7 +275,7 @@ export default function ListRoom() {
     
     return (
         <section id="rooms" className="py-16 bg-gradient-to-br from-blue-50 via-white to-purple-50">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 overflow-x-clip">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6">
                 <div className="text-center mb-12">
                     <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
                         Khám Phá Các Khu Vực

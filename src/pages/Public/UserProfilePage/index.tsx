@@ -1064,7 +1064,14 @@ export default function UserProfilePage() {
                                                                     Xem chi tiết
                                                                 </span>
                                                             </button>
-                                                            <button className="flex items-center space-x-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm">
+                                                            <button
+                                                                onClick={() =>
+                                                                    navigate(
+                                                                        `/room-detail/${booking.maPhong}#reviews`
+                                                                    )
+                                                                }
+                                                                className="flex items-center space-x-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm"
+                                                            >
                                                                 <Star className="w-4 h-4" />
                                                                 <span>
                                                                     Đánh giá

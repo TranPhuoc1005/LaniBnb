@@ -102,9 +102,24 @@ export default function RoomDetailPage() {
     }, [clearError]);
 
     useEffect(() => {
+        if (window.location.hash === '#reviews') {
+            setTimeout(() => {
+                const reviewsElement = document.getElementById('reviews');
+                if (reviewsElement) {
+                    const elementPosition = reviewsElement.getBoundingClientRect().top;
+                    const offsetPosition = elementPosition + window.pageYOffset - 80;
+                    window.scrollTo({
+                        top: offsetPosition,
+                        behavior: 'smooth'
+                    });
+                }
+            }, 100);
+        }
+    }, [roomDetail]);
+
+    useEffect(() => {
         if (createBookingSuccess) {
             setShowBookingModal(true);
-            // Reset form
             setSelectedDate({ checkIn: "", checkOut: "" });
             setGuests(2);
         }
@@ -147,7 +162,7 @@ export default function RoomDetailPage() {
         }
 
         const bookingData: CreateBookingRequest = {
-            maPhong: roomDetail.id, // Sử dụng room.id làm maPhong
+            maPhong: roomDetail.id,
             ngayDen: selectedDate.checkIn,
             ngayDi: selectedDate.checkOut,
             soLuongKhach: guests,
