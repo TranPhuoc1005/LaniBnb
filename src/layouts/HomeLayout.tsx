@@ -5,12 +5,12 @@ import Footer from '../pages/Public/_components/Footer'
 
 export default function HomeLayout() {
   return (
-    <>
+    <div className="wrapper">
         <Header />
-        <main className="mt-[52px] md:mt-[72px]">
+        <main className="mt-[52px] md:mt-[80px]">
           <Outlet />
         </main>
         <Footer />
-    </>
+    </div>
   )
 }

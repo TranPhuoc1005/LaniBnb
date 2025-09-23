@@ -9,6 +9,7 @@ const RoomsPage = lazy(() => import("../pages/Public/RoomsPage"));
 const RoomDetailPage = lazy(() => import("../pages/Public/RoomDetailPage"));
 const UserProfilePage = lazy(() => import("../pages/Public/UserProfilePage"));
 const LoginPage = lazy(() => import("../pages/Public/LoginPage/"));
+const ContactPage = lazy(() => import("../pages/Public/ContactPage"));
 
 const withSuspense = (Component: LazyExoticComponent<FC>) => {
   return <Suspense fallback={<LoadingUI />}><Component/></Suspense>
@@ -38,6 +39,10 @@ export const routes: RouteObject[] = [
       {
         path: '/room-detail/:id',
         element: withSuspense(RoomDetailPage)
+      },
+      {
+        path: '/contact',
+        element: withSuspense(ContactPage)
       },
     ]
   },

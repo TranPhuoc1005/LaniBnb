@@ -92,7 +92,7 @@ export default function AboutUsSection() {
     ];
 
     return (
-        <section className="py-20 bg-gradient-to-br from-gray-50 via-blue-50 to-purple-50 relative overflow-hidden" data-aos="fade-up">
+        <section className="py-20 bg-gradient-to-br from-gray-50 via-blue-50 to-purple-50 relative overflow-hidden">
             <div className="absolute inset-0 opacity-40">
                 <div className="absolute top-20 left-10 w-32 h-32 bg-blue-200 rounded-full blur-3xl animate-pulse"></div>
                 <div className="absolute bottom-20 right-10 w-40 h-40 bg-purple-200 rounded-full blur-3xl animate-pulse delay-1000"></div>
@@ -100,7 +100,7 @@ export default function AboutUsSection() {
             </div>
 
             <div className="max-w-7xl mx-auto px-4 relative z-10">
-                <div className="text-center mb-16">
+                <div className="text-center mb-16" data-aos="fade-up">
                     <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-sky-300 to-blue-300 rounded-full mb-6 shadow-lg">
                         <Heart className="w-8 h-8 text-white" />
                     </div>
@@ -120,8 +120,8 @@ export default function AboutUsSection() {
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-20">
                     {stats.map((stat, index) => (
                         <Card
-                            key={index}
-                            className="text-center bg-white/70 backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2"
+                            key={index} 
+                            className="text-center bg-white/70 backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-300" data-aos="fade-up" data-aos-delay={index * 200}
                         >
                             <CardHeader>
                                 <div className="flex text-white items-center justify-center w-12 h-12 mx-auto bg-gradient-to-r from-sky-300 to-blue-300 rounded-full mb-2 text-center">
@@ -139,7 +139,7 @@ export default function AboutUsSection() {
                 </div>
 
                 <div className="grid lg:grid-cols-2 gap-16 items-center mb-20">
-                    <div>
+                    <div data-aos="fade-right">
                         <Badge className="bg-gradient-to-r from-sky-300 to-blue-300 text-white px-4 py-2 rounded-full text-sm font-medium mb-6 border-0">
                             <Zap className="w-4 h-4 mr-2" />
                             Đặt phòng thông minh
@@ -180,7 +180,7 @@ export default function AboutUsSection() {
                         </div>
                     </div>
 
-                    <div className="relative">
+                    <div className="relative" data-aos="fade-left">
                         <Card className="relative bg-gradient-to-br from-blue-100 to-purple-100 rounded-3xl p-8 shadow-2xl">
                             <img
                                 src="https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"
@@ -192,7 +192,7 @@ export default function AboutUsSection() {
                             </div>
                         </Card>
 
-                        <Card className="absolute -bottom-6 -right-6 bg-white rounded-2xl p-4 shadow-xl border border-gray-100">
+                        <Card className="absolute -bottom-6 -right-2 bg-white rounded-2xl p-4 shadow-xl border border-gray-100">
                             <div className="flex items-center space-x-3">
                                 <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
                                     <CheckCircle className="w-6 h-6 text-green-600" />
@@ -214,7 +214,7 @@ export default function AboutUsSection() {
                     {features.map((feature, index) => (
                         <Card
                             key={index}
-                            className="bg-white/70 backdrop-blur-sm rounded-2xl p-6-3 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2 group gap-2"
+                            className="bg-white/70 backdrop-blur-sm rounded-2xl p-6-3 shadow-lg hover:shadow-xl transition-all duration-300 group gap-2" data-aos="fade-up" data-aos-delay={index * 200}
                         >
                             <CardHeader>
                                 <div
@@ -235,9 +235,9 @@ export default function AboutUsSection() {
                     ))}
                 </div>
 
-                <div className="text-center mt-16">
+                <div className="text-center mt-16" data-aos="fade-up">
                     <Card className="bg-gradient-to-r from-sky-300 to-blue-300 rounded-2xl p-8 shadow-2xl border-0">
-                        <h3 className="text-2xl md:text-3xl font-bold text-white mb-4">
+                        <h3 className="text-2xl md:text-3xl font-bold text-white">
                             Sẵn sàng cho chuyến du lịch tiếp theo?
                         </h3>
                         <p className="text-blue-100  max-w-2xl mx-auto">
@@ -246,7 +246,7 @@ export default function AboutUsSection() {
                         </p>
                         <Link
                             to={"/rooms/"}
-                            className="w-full max-w-1/4 mx-auto bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-50 transition-colors duration-200 shadow-lg hover:shadow-xl"
+                            className="w-full max-w-[300px] mx-auto bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-50 transition-colors duration-200 shadow-lg hover:shadow-xl"
                         >
                             Khám phá ngay
                         </Link>
