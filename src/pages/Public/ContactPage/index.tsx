@@ -25,8 +25,8 @@ export default function ContactPage() {
         subject: '',
         message: ''
     });
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const [isSubmitted, setIsSubmitted] = useState(false);
+    const [isSubmitting] = useState(false);
+    const [isSubmitted] = useState(false);
 
     const handleInputChange = (e:any) => {
         const { name, value } = e.target;
