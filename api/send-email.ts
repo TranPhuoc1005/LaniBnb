@@ -25,7 +25,6 @@ export default async function handler(req: any, res: any) {
         const fromEmail = process.env.FROM_EMAIL || process.env.SMTP_USER;
         const adminTo = process.env.TO_EMAIL || fromEmail;
 
-        // gửi cho admin
         await transporter.sendMail({
             from: `"Website Contact" <${fromEmail}>`,
             to: adminTo,
@@ -41,7 +40,6 @@ export default async function handler(req: any, res: any) {
             replyTo: email,
         });
 
-        // auto-reply cho user
         await transporter.sendMail({
             from: `"Hỗ trợ Website" <${fromEmail}>`,
             to: email,
