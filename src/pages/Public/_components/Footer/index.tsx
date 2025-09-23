@@ -101,7 +101,7 @@ export default function Footer() {
                         <div>
                             <h3 className="text-lg font-semibold mb-6 text-white">Điểm đến phổ biến</h3>
                             <ul className="space-y-3">
-                                {popularDestinations.map((location, index) => (
+                                {popularDestinations.map((location) => (
                                     <li key={location.id}>
                                         <a 
                                             href="#" 
