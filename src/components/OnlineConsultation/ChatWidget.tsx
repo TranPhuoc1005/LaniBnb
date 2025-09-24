@@ -1,28 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { 
-    MessageCircle, 
-    X, 
-    Send, 
-    User, 
-    Phone,
-    Video,
-    Paperclip,
-    Smile,
-    CheckCheck,
-    Check,
-    Move
-} from 'lucide-react';
-import { 
-    collection, 
-    addDoc, 
-    query, 
-    onSnapshot, 
-    updateDoc,
-    doc,
-    serverTimestamp,
-    where,
-    Timestamp
-} from 'firebase/firestore';
+import { MessageCircle, X, Send, User, Phone,Video,Paperclip,Smile,CheckCheck,Check,Move } from 'lucide-react';
+import { collection, addDoc, query, onSnapshot, updateDoc,doc,serverTimestamp,where,Timestamp} from 'firebase/firestore';
 import { db } from '@/firebase';
 
 interface ChatMessage {
@@ -54,8 +32,7 @@ const ChatWidget: React.FC = () => {
     });
     const [unreadCount, setUnreadCount] = useState(0);
     
-    // Drag & Drop states
-    const [position, setPosition] = useState<Position>({ x: 24, y: 24 }); // Default: bottom-right
+    const [position, setPosition] = useState<Position>({ x: 24, y: 24 });
     const [isDragging, setIsDragging] = useState(false);
     const [dragStart, setDragStart] = useState<Position>({ x: 0, y: 0 });
     const [isHovering, setIsHovering] = useState(false);
@@ -64,7 +41,6 @@ const ChatWidget: React.FC = () => {
     const chatContainerRef = useRef<HTMLDivElement>(null);
     const widgetRef = useRef<HTMLDivElement>(null);
 
-    // Load saved position from localStorage
     useEffect(() => {
         const savedPosition = localStorage.getItem('chat-widget-position');
         if (savedPosition) {
@@ -77,14 +53,12 @@ const ChatWidget: React.FC = () => {
         }
     }, []);
 
-    // Save position to localStorage
     const savePosition = (newPosition: Position) => {
         localStorage.setItem('chat-widget-position', JSON.stringify(newPosition));
     };
 
-    // Handle mouse down for dragging
     const handleMouseDown = (e: React.MouseEvent) => {
-        if (e.button !== 0) return; // Only left click
+        if (e.button !== 0) return;
         
         e.preventDefault();
         e.stopPropagation();
@@ -99,7 +73,6 @@ const ChatWidget: React.FC = () => {
         document.body.style.cursor = 'grabbing';
     };
 
-    // Handle mouse move for dragging
     const handleMouseMove = (e: MouseEvent) => {
         if (!isDragging) return;
         
@@ -108,19 +81,16 @@ const ChatWidget: React.FC = () => {
         const newX = e.clientX - dragStart.x;
         const newY = e.clientY - dragStart.y;
         
-        // Get viewport dimensions
         const viewportWidth = window.innerWidth;
         const viewportHeight = window.innerHeight;
         const buttonSize = 64; // Approximate button size
         
-        // Constrain to viewport
         const constrainedX = Math.max(8, Math.min(newX, viewportWidth - buttonSize - 8));
         const constrainedY = Math.max(8, Math.min(newY, viewportHeight - buttonSize - 8));
         
         setPosition({ x: constrainedX, y: constrainedY });
     };
 
-    // Handle mouse up for dragging
     const handleMouseUp = () => {
         if (!isDragging) return;
         
@@ -128,11 +98,9 @@ const ChatWidget: React.FC = () => {
         document.body.style.userSelect = '';
         document.body.style.cursor = '';
         
-        // Save position
         savePosition(position);
     };
 
-    // Setup global mouse events for dragging
     useEffect(() => {
         if (isDragging) {
             document.addEventListener('mousemove', handleMouseMove);
@@ -145,7 +113,6 @@ const ChatWidget: React.FC = () => {
         }
     }, [isDragging, dragStart, position]);
 
-    // Prevent click when dragging
     const handleClick = (e: React.MouseEvent) => {
         if (isDragging) {
             e.preventDefault();
@@ -155,7 +122,6 @@ const ChatWidget: React.FC = () => {
         setIsOpen(!isOpen);
     };
 
-    // Auto scroll to bottom
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     };
@@ -164,7 +130,6 @@ const ChatWidget: React.FC = () => {
         scrollToBottom();
     }, [messages]);
 
-    // Start chat session
     const startChat = async () => {
         if (!userInfo.name || !userInfo.email) {
             alert('Vui lòng nhập đầy đủ thông tin!');
@@ -186,7 +151,6 @@ const ChatWidget: React.FC = () => {
             setSessionId(sessionDoc.id);
             setIsStarted(true);
 
-            // Send welcome message from admin
             const messageData = {
                 sessionId: sessionDoc.id,
                 text: `Xin chào ${userInfo.name}! Cảm ơn bạn đã liên hệ với LaniBnb. Chúng tôi sẽ hỗ trợ bạn ngay. Vui lòng chờ trong giây lát...`,
@@ -204,7 +168,6 @@ const ChatWidget: React.FC = () => {
         }
     };
 
-    // Listen to messages
     useEffect(() => {
         if (!sessionId) return;
 
@@ -228,7 +191,6 @@ const ChatWidget: React.FC = () => {
                 } as ChatMessage;
             });
             
-            // Sort manually by timestamp
             messagesData.sort((a, b) => {
                 if (!a.timestamp || !b.timestamp) return 0;
                 return a.timestamp.toMillis() - b.timestamp.toMillis();
@@ -236,13 +198,11 @@ const ChatWidget: React.FC = () => {
             
             setMessages(messagesData);
             
-            // Count unread admin messages
             const unreadAdminMessages = messagesData.filter(msg => 
                 msg.sender === 'admin' && !msg.read
             );
             setUnreadCount(unreadAdminMessages.length);
 
-            // Mark admin messages as read when user sees them
             unreadAdminMessages.forEach(async (msg) => {
                 try {
                     await updateDoc(doc(db, 'messages', msg.id), { read: true });
@@ -255,7 +215,6 @@ const ChatWidget: React.FC = () => {
         return () => unsubscribe();
     }, [sessionId]);
 
-    // Send message
     const sendMessage = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!newMessage.trim() || !sessionId) return;
@@ -272,7 +231,6 @@ const ChatWidget: React.FC = () => {
 
             await addDoc(collection(db, 'messages'), messageData);
 
-            // Update session last message and status
             await updateDoc(doc(db, 'chatSessions', sessionId), {
                 lastMessage: newMessage.trim(),
                 status: 'active'
@@ -285,7 +243,6 @@ const ChatWidget: React.FC = () => {
         }
     };
 
-    // Format time
     const formatTime = (timestamp: Timestamp | null) => {
         if (!timestamp) return '';
         try {
@@ -299,49 +256,41 @@ const ChatWidget: React.FC = () => {
         }
     };
 
-    // Calculate chat window position based on button position
     const getChatWindowStyle = () => {
         const buttonSize = 64;
-        const chatWidth = 384; // w-96 = 24rem = 384px
+        const chatWidth = 384;
         const chatHeight = 500;
         const offset = 8;
         
         let windowX = position.x;
         let windowY = position.y;
         
-        // Adjust horizontal position
         if (position.x > window.innerWidth / 2) {
-            // Button on right side, show chat on left
             windowX = position.x - chatWidth - offset;
         } else {
-            // Button on left side, show chat on right
             windowX = position.x + buttonSize + offset;
         }
         
-        // Adjust vertical position
         if (position.y > window.innerHeight - chatHeight - offset) {
-            // Not enough space below, show above
             windowY = position.y - chatHeight + buttonSize;
         }
         
-        // Ensure chat doesn't go off screen
         windowX = Math.max(offset, Math.min(windowX, window.innerWidth - chatWidth - offset));
         windowY = Math.max(offset, Math.min(windowY, window.innerHeight - chatHeight - offset));
         
         return {
-            left: `${windowX}px`,
-            top: `${windowY}px`,
-            right: 'auto',
-            bottom: 'auto'
+            right: `${windowX}px`,
+            bottom: `${windowY}px`,
+            top: 'auto',
+            left: 'auto'
         };
     };
 
     return (
         <>
-            {/* Draggable Chat Bubble */}
             <div 
                 ref={widgetRef}
-                className="fixed z-200 bottom-3 right-3 w-[56px] h-[56px]"
+                className="fixed z-200"
                 style={{
                     left: `${position.x}px`,
                     top: `${position.y}px`,
@@ -358,7 +307,7 @@ const ChatWidget: React.FC = () => {
                         className={`relative bg-gradient-to-r from-sky-500 to-blue-600 text-white p-4 rounded-full shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 ${
                             isDragging ? 'scale-110 shadow-2xl' : ''
                         }`}
-                        style={{ touchAction: 'none' }} // Prevent touch scrolling on mobile
+                        style={{ touchAction: 'none' }} 
                     >
                         <MessageCircle className="w-6 h-6" />
                         {unreadCount > 0 && (
@@ -368,7 +317,6 @@ const ChatWidget: React.FC = () => {
                         )}
                     </button>
                     
-                    {/* Drag indicator - shows on hover */}
                     {isHovering && !isOpen && (
                         <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-black text-white text-xs px-2 py-1 rounded whitespace-nowrap opacity-75">
                             <Move className="w-3 h-3 inline mr-1" />
@@ -378,13 +326,11 @@ const ChatWidget: React.FC = () => {
                 </div>
             </div>
 
-            {/* Chat Window */}
             {isOpen && (
                 <div 
                     className="fixed w-80 sm:w-96 h-[500px] bg-white rounded-2xl shadow-2xl border border-gray-200 z-40 flex flex-col overflow-hidden"
                     style={getChatWindowStyle()}
                 >
-                    {/* Header */}
                     <div className="bg-gradient-to-r from-sky-500 to-blue-600 text-white p-4 flex items-center justify-between">
                         <div className="flex items-center space-x-3">
                             <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
@@ -415,7 +361,6 @@ const ChatWidget: React.FC = () => {
                         </div>
                     </div>
 
-                    {/* Content */}
                     {!isStarted ? (
                         <div className="p-6 flex-1 flex flex-col justify-center">
                             <div className="text-center mb-6">
@@ -462,7 +407,6 @@ const ChatWidget: React.FC = () => {
                         </div>
                     ) : (
                         <>
-                            {/* Messages */}
                             <div 
                                 ref={chatContainerRef}
                                 className="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50"
@@ -503,7 +447,6 @@ const ChatWidget: React.FC = () => {
                                 <div ref={messagesEndRef} />
                             </div>
 
-                            {/* Input */}
                             <div className="p-4 bg-white border-t border-gray-200">
                                 <form onSubmit={sendMessage} className="flex items-center space-x-2">
                                     <button 
