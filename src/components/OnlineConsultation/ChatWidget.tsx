@@ -16,7 +16,6 @@ import {
     collection, 
     addDoc, 
     query, 
-    orderBy, 
     onSnapshot, 
     updateDoc,
     doc,
@@ -47,7 +46,6 @@ const ChatWidget: React.FC = () => {
     const [isStarted, setIsStarted] = useState(false);
     const [messages, setMessages] = useState<ChatMessage[]>([]);
     const [newMessage, setNewMessage] = useState('');
-    const [isTyping, setIsTyping] = useState(false);
     const [sessionId, setSessionId] = useState<string | null>(null);
     const [userInfo, setUserInfo] = useState({
         name: '',

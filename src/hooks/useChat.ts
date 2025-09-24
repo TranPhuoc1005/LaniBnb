@@ -19,15 +19,6 @@ interface ChatMessage {
     senderName?: string;
 }
 
-interface ChatSession {
-    id: string;
-    userId: string;
-    userName: string;
-    userEmail: string;
-    status: 'waiting' | 'active' | 'closed';
-    createdAt: any;
-}
-
 export const useChat = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [isConnected, setIsConnected] = useState(false);
