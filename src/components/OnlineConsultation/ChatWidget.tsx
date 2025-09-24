@@ -32,7 +32,8 @@ const ChatWidget: React.FC = () => {
     });
     const [unreadCount, setUnreadCount] = useState(0);
     
-    const [position, setPosition] = useState<Position>({ x: 24, y: 24 });
+    // Changed default position to bottom-right corner
+    const [position, setPosition] = useState<Position>({ x: window.innerWidth - 120, y: window.innerHeight - 120 });
     const [isDragging, setIsDragging] = useState(false);
     const [dragStart, setDragStart] = useState<Position>({ x: 0, y: 0 });
     const [isHovering, setIsHovering] = useState(false);
@@ -49,8 +50,26 @@ const ChatWidget: React.FC = () => {
                 setPosition(parsed);
             } catch (error) {
                 console.error('Error parsing saved position:', error);
+                // Fallback to bottom-right if parsing fails
+                setPosition({ x: window.innerWidth - 120, y: window.innerHeight - 120 });
             }
+        } else {
+            // Set initial position to bottom-right corner
+            setPosition({ x: window.innerWidth - 120, y: window.innerHeight - 120 });
         }
+    }, []);
+
+    // Handle window resize to maintain relative position
+    useEffect(() => {
+        const handleResize = () => {
+            setPosition(prev => ({
+                x: Math.min(prev.x, window.innerWidth - 120),
+                y: Math.min(prev.y, window.innerHeight - 120)
+            }));
+        };
+
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
     }, []);
 
     const savePosition = (newPosition: Position) => {
@@ -83,10 +102,10 @@ const ChatWidget: React.FC = () => {
         
         const viewportWidth = window.innerWidth;
         const viewportHeight = window.innerHeight;
-        const buttonSize = 64; // Approximate button size
+        const buttonSize = 64;
         
-        const constrainedX = Math.max(8, Math.min(newX, viewportWidth - buttonSize - 8));
-        const constrainedY = Math.max(8, Math.min(newY, viewportHeight - buttonSize - 8));
+        const constrainedX = Math.max(15, Math.min(newX, viewportWidth - buttonSize - 15));
+        const constrainedY = Math.max(15, Math.min(newY, viewportHeight - buttonSize - 15));
         
         setPosition({ x: constrainedX, y: constrainedY });
     };
@@ -279,10 +298,10 @@ const ChatWidget: React.FC = () => {
         windowY = Math.max(offset, Math.min(windowY, window.innerHeight - chatHeight - offset));
         
         return {
-            right: `${windowX}px`,
-            bottom: `${windowY}px`,
-            top: 'auto',
-            left: 'auto'
+            left: `${windowX}px`,
+            top: `${windowY}px`,
+            bottom: 'auto',
+            right: 'auto'
         };
     };
 
