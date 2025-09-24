@@ -17,6 +17,7 @@ import {
     Twitter,
     ChevronDown
 } from "lucide-react";
+import Chat from '@/components/layout/Chat';
 
 export default function ContactPage() {
     const [formData, setFormData] = useState({
@@ -368,6 +369,7 @@ export default function ContactPage() {
                                     <MessageCircle className="w-5 h-5" />
                                     WhatsApp
                                 </button>
+                                <Chat />
                                 <a 
                                     href="tel:0934100597" 
                                     className="bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white p-4 rounded-xl font-semibold transition-all duration-200 transform hover:scale-105 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl"
