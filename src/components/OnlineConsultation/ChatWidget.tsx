@@ -32,7 +32,6 @@ const ChatWidget: React.FC = () => {
     });
     const [unreadCount, setUnreadCount] = useState(0);
     
-    // Changed default position to bottom-right corner
     const [position, setPosition] = useState<Position>({ x: window.innerWidth - 120, y: window.innerHeight - 120 });
     const [isDragging, setIsDragging] = useState(false);
     const [dragStart, setDragStart] = useState<Position>({ x: 0, y: 0 });
@@ -50,16 +49,13 @@ const ChatWidget: React.FC = () => {
                 setPosition(parsed);
             } catch (error) {
                 console.error('Error parsing saved position:', error);
-                // Fallback to bottom-right if parsing fails
                 setPosition({ x: window.innerWidth - 120, y: window.innerHeight - 120 });
             }
         } else {
-            // Set initial position to bottom-right corner
             setPosition({ x: window.innerWidth - 120, y: window.innerHeight - 120 });
         }
     }, []);
 
-    // Handle window resize to maintain relative position
     useEffect(() => {
         const handleResize = () => {
             setPosition(prev => ({
