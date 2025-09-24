@@ -341,7 +341,7 @@ const ChatWidget: React.FC = () => {
             {/* Draggable Chat Bubble */}
             <div 
                 ref={widgetRef}
-                className="fixed z-200 bottom-3 right-3"
+                className="fixed z-200 bottom-3 right-3 w-[56px] h-[56px]"
                 style={{
                     left: `${position.x}px`,
                     top: `${position.y}px`,
