@@ -10,6 +10,8 @@ const RoomDetailPage = lazy(() => import("../pages/Public/RoomDetailPage"));
 const UserProfilePage = lazy(() => import("../pages/Public/UserProfilePage"));
 const LoginPage = lazy(() => import("../pages/Public/LoginPage/"));
 const ContactPage = lazy(() => import("../pages/Public/ContactPage"));
+const ChatDashboard = lazy(() => import("../pages/Admin/Dashboard"));
+const ChatManagement = lazy(() => import("../pages/Admin/ChatManagement"));
 
 const withSuspense = (Component: LazyExoticComponent<FC>) => {
   return <Suspense fallback={<LoadingUI />}><Component/></Suspense>
@@ -49,5 +51,13 @@ export const routes: RouteObject[] = [
   {
     path: '/login',
     element: withSuspense(LoginPage)
+  },
+  {
+    path: '/dashboard',
+    element: withSuspense(ChatDashboard)
+  },
+  {
+    path: '/chat-management',
+    element: withSuspense(ChatManagement)
   }
 ]

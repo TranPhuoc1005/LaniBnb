@@ -15,9 +15,12 @@ import {
     Facebook,
     Instagram,
     Twitter,
-    ChevronDown
+    ChevronDown,
+    Video,
+    Zap
 } from "lucide-react";
-import Chat from '@/components/layout/Chat';
+import QuickSupport from '@/components/OnlineConsultation/QuickSupport';
+import ChatWidget from '@/components/OnlineConsultation/ChatWidget';
 
 export default function ContactPage() {
     const [formData, setFormData] = useState({
@@ -40,31 +43,31 @@ export default function ContactPage() {
     };
 
     const handleSubmit = async (e: any) => {
-        e.preventDefault()
-        setIsSubmitting(true)
-        setIsSubmitted(false)
+        e.preventDefault();
+        setIsSubmitting(true);
+        setIsSubmitted(false);
 
         try {
-        const resp = await fetch("/api/send-email", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(formData),
-        })
+            const resp = await fetch("/api/send-email", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(formData),
+            });
 
-        if (!resp.ok) {
-            const err = await resp.json().catch(() => ({}))
-            throw new Error(err.message || "Không gửi được mail")
-        }
+            if (!resp.ok) {
+                const err = await resp.json().catch(() => ({}));
+                throw new Error(err.message || "Không gửi được mail");
+            }
 
-        setIsSubmitted(true)
-        setFormData({ name: '', email: '', phone: '', subject: '', message: '' })
+            setIsSubmitted(true);
+            setFormData({ name: '', email: '', phone: '', subject: '', message: '' });
         } catch (error: any) {
-            console.error("Gửi mail lỗi:", error)
-            alert("Gửi thất bại: " + (error.message || "Thử lại sau"))
+            console.error("Gửi mail lỗi:", error);
+            alert("Gửi thất bại: " + (error.message || "Thử lại sau"));
         } finally {
-            setIsSubmitting(false)
+            setIsSubmitting(false);
         }
-    }
+    };
 
     const contactInfo = [
         {
@@ -106,10 +109,48 @@ export default function ContactPage() {
         { icon: <Twitter className="w-5 h-5" />, name: "Twitter", color: "hover:bg-sky-500" }
     ];
 
+    const supportMethods = [
+        {
+            icon: <MessageCircle className="w-8 h-8" />,
+            title: "Live Chat",
+            description: "Tư vấn trực tiếp với chuyên gia du lịch",
+            features: ["Phản hồi tức thì", "Hỗ trợ 24/7", "Tư vấn miễn phí"],
+            color: "from-blue-500 to-cyan-500",
+            bgColor: "bg-blue-50",
+            buttonText: "Bắt đầu chat",
+            action: () => {
+                const chatButton = document.querySelector('[data-chat-widget]') as HTMLElement;
+                if (chatButton) {
+                    chatButton.click();
+                }
+            }
+        },
+        {
+            icon: <Phone className="w-8 h-8" />,
+            title: "Hotline",
+            description: "Gọi trực tiếp để được hỗ trợ nhanh nhất",
+            features: ["Hỗ trợ 24/7", "Miễn phí tư vấn", "Đặt phòng nhanh"],
+            color: "from-green-500 to-emerald-500",
+            bgColor: "bg-green-50",
+            buttonText: "Gọi ngay",
+            action: () => window.open('tel:0934100597')
+        },
+        {
+            icon: <Video className="w-8 h-8" />,
+            title: "Video Call",
+            description: "Tư vấn trực tiếp qua video call",
+            features: ["Tư vấn trực quan", "Chia sẻ màn hình", "Đặt lịch hẹn"],
+            color: "from-purple-500 to-pink-500",
+            bgColor: "bg-purple-50",
+            buttonText: "Đặt lịch",
+            action: () => window.open('https://calendly.com/lanibnb', '_blank')
+        }
+    ];
+
     const faqs = [
         {
             q: "Thời gian phản hồi là bao lâu?",
-            a: "Chúng tôi cam kết phản hồi trong vòng 2 giờ làm việc qua email và tức thì qua hotline 24/7. Đối với các yêu cầu phức tạp, chúng tôi sẽ liên hệ trong vòng 24 giờ."
+            a: "Chúng tôi cam kết phản hồi trong vòng 2 giờ làm việc qua email và tức thì qua hotline 24/7. Đối với live chat, thời gian phản hồi trung bình là dưới 5 phút."
         },
         {
             q: "Có hỗ trợ tư vấn miễn phí không?",
@@ -117,7 +158,7 @@ export default function ContactPage() {
         },
         {
             q: "Làm thế nào để đặt phòng nhanh nhất?",
-            a: "Bạn có thể gọi hotline, sử dụng live chat trên website, hoặc đặt trực tiếp qua form booking. Chúng tôi sẽ xác nhận đặt phòng trong vòng 15 phút."
+            a: "Bạn có thể sử dụng live chat để được hỗ trợ tức thì, gọi hotline, hoặc đặt trực tiếp qua form booking trên website. Chúng tôi sẽ xác nhận đặt phòng trong vòng 15 phút."
         },
         {
             q: "Có chính sách hoàn tiền không?",
@@ -128,8 +169,8 @@ export default function ContactPage() {
             a: "Có, bạn có thể thay đổi ngày, số khách (tùy theo tình trạng phòng trống) miễn phí trước 24h. Sau thời gian này có thể phát sinh phí thay đổi."
         },
         {
-            q: "Có dịch vụ hỗ trợ tại chỗ không?",
-            a: "Có, chúng tôi có đội ngũ hỗ trợ tại các điểm đến chính như TP.HCM, Hà Nội, Đà Nẵng để hỗ trợ khách hàng khi cần thiết."
+            q: "Live chat có hoạt động 24/7 không?",
+            a: "Có, hệ thống live chat của chúng tôi hoạt động 24/7. Trong giờ hành chính, bạn sẽ được hỗ trợ trực tiếp bởi tư vấn viên. Ngoài giờ, hệ thống tự động sẽ ghi nhận và chúng tôi phản hồi sớm nhất có thể."
         }
     ];
 
@@ -154,7 +195,7 @@ export default function ContactPage() {
                         Liên hệ với chúng tôi
                     </div>
                     
-                    <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold mb-6 !leading-tight">
+                    <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold mb-6 leading-tight">
                         Hãy Nói Chuyện
                         <br />
                         <span className="bg-gradient-to-r from-yellow-300 to-orange-300 bg-clip-text text-transparent">
@@ -179,6 +220,48 @@ export default function ContactPage() {
                             <MessageCircle className="w-4 h-4 text-blue-300" />
                             <span className="text-sm font-medium">Hỗ trợ 24/7</span>
                         </div>
+                    </div>
+                </div>
+            </section>
+
+            <section className="py-16 lg:py-20 px-4 sm:px-6 -mt-10 relative z-10">
+                <div className="max-w-7xl mx-auto">
+                    <div className="text-center mb-12">
+                        <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
+                            Chọn cách liên hệ phù hợp
+                        </h2>
+                        <p className="text-gray-600 text-lg max-w-2xl mx-auto">
+                            Chúng tôi cung cấp nhiều kênh hỗ trợ để bạn có thể liên hệ theo cách thuận tiện nhất
+                        </p>
+                    </div>
+
+                    <div className="grid md:grid-cols-3 gap-8 mb-16">
+                        {supportMethods.map((method, index) => (
+                            <div key={index} className={`${method.bgColor} rounded-3xl p-8 border border-gray-100 hover:shadow-xl transition-all duration-300 group`}>
+                                <div className={`w-16 h-16 bg-gradient-to-r ${method.color} rounded-2xl flex items-center justify-center text-white mb-6 group-hover:scale-110 transition-transform duration-200`}>
+                                    {method.icon}
+                                </div>
+                                
+                                <h3 className="text-xl font-bold text-gray-900 mb-4">{method.title}</h3>
+                                <p className="text-gray-600 mb-6">{method.description}</p>
+                                
+                                <div className="space-y-2 mb-8">
+                                    {method.features.map((feature, idx) => (
+                                        <div key={idx} className="flex items-center text-sm text-gray-700">
+                                            <Zap className="w-4 h-4 text-yellow-500 mr-2 flex-shrink-0" />
+                                            {feature}
+                                        </div>
+                                    ))}
+                                </div>
+
+                                <button
+                                    onClick={method.action}
+                                    className={`w-full bg-gradient-to-r ${method.color} text-white py-3 px-6 rounded-xl font-semibold hover:shadow-lg transform hover:scale-105 transition-all duration-200`}
+                                >
+                                    {method.buttonText}
+                                </button>
+                            </div>
+                        ))}
                     </div>
                 </div>
             </section>
@@ -291,7 +374,7 @@ export default function ContactPage() {
                                             type="submit"
                                             disabled={isSubmitting}
                                             className="w-full bg-gradient-to-r from-sky-500 to-blue-600 text-white py-4 rounded-xl font-semibold text-lg hover:from-sky-600 hover:to-blue-700 transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg hover:shadow-xl"
-                                            >
+                                        >
                                             {isSubmitting ? (
                                                 <>
                                                     <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
@@ -369,7 +452,7 @@ export default function ContactPage() {
                                     <MessageCircle className="w-5 h-5" />
                                     WhatsApp
                                 </button>
-                                <Chat />
+                                
                                 <a 
                                     href="tel:0934100597" 
                                     className="bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white p-4 rounded-xl font-semibold transition-all duration-200 transform hover:scale-105 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl"
@@ -416,6 +499,9 @@ export default function ContactPage() {
                     </div>
                 </div>
             </section>
+
+            <ChatWidget />
+            <QuickSupport />
         </div>
     );
 }
