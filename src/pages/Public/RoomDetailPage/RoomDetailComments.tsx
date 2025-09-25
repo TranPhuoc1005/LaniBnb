@@ -262,7 +262,7 @@ export default function RoomDetailComments({
                                 đánh giá sau khi thuê phòng.
                             </p>
                             <Link
-                                to="/auth/signin"
+                                to="/login"
                                 className="text-blue-600 hover:text-blue-700 font-medium text-sm"
                             >
                                 Đăng nhập
