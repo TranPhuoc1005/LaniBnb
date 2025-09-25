@@ -113,7 +113,6 @@ const AdminChatPanel: React.FC = () => {
         if (!newMessage.trim() || !selectedSession) return;
 
         try {
-            // Add message to Firestore
             await addDoc(collection(db, 'messages'), {
                 sessionId: selectedSession.id,
                 text: newMessage.trim(),

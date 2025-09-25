@@ -286,69 +286,6 @@ export default function AboutPage() {
                     </div>
                 </div>
             </section>
-
-            <section className="py-20 px-6 bg-gray-50">
-                <div className="max-w-7xl mx-auto text-center">
-                    <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-sky-300 to-blue-300 bg-clip-text text-transparent">
-                        Liên Hệ Với Chúng Tôi
-                    </h2>
-                    <p className="text-xl text-gray-600 mb-12">
-                        Đội ngũ chuyên gia du lịch sẵn sàng hỗ trợ 24/7
-                    </p>
-                    <div className="grid lg:grid-cols-3 gap-8">
-                        <Card className="lg:col-span-2 p-8">
-                            <CardHeader>
-                                <h3 className="text-2xl font-bold mb-6">
-                                    Gửi Tin Nhắn
-                                </h3>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="grid md:grid-cols-2 gap-6 mb-6">
-                                    <Input placeholder="Họ và tên" className="w-full !h-15" />
-                                    <Input placeholder="Email" type="email" className="w-full !h-15" />
-                                </div>
-                                <Input placeholder="Tiêu đề" className="mb-6 w-full !h-15" />
-                                <Textarea
-                                    placeholder="Nội dung tin nhắn..."
-                                    rows={6}
-                                    className="mb-6 w-full !h-50"
-                                />
-                                <Button className="w-full h-14 bg-gradient-to-r from-sky-300 to-blue-300 text-white text-xl">
-                                    Gửi Tin Nhắn
-                                </Button>
-                            </CardContent>
-                        </Card>
-                        <div className="space-y-8">
-                            <Card className="p-8">
-                                <Phone className="w-6 h-6 text-blue-600 mx-auto" />
-                                <h3 className="text-xl font-bold">
-                                    Hotline 24/7
-                                </h3>
-                                <p className="text-gray-600">+84 934 100 597</p>
-                            </Card>
-                            <Card className="p-8">
-                                <Mail className="w-6 h-6 text-blue-600 mx-auto" />
-                                <h3 className="text-xl font-bold">Email</h3>
-                                <p className="text-gray-600">
-                                    tranphuoc1005@gmail.com
-                                </p>
-                            </Card>
-                            <Card className="p-8">
-                                <MessageCircle className="w-6 h-6 text-blue-600 mx-auto" />
-                                <h3 className="text-xl font-bold">
-                                    Live Chat
-                                </h3>
-                                <p className="text-gray-600 mb-4">
-                                    Trò chuyện trực tiếp với chuyên gia
-                                </p>
-                                <Button className="w-full bg-green-500 hover:bg-green-600 text-white">
-                                    Bắt đầu chat
-                                </Button>
-                            </Card>
-                        </div>
-                    </div>
-                </div>
-            </section>
         </div>
     );
 }

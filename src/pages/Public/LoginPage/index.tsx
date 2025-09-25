@@ -20,8 +20,8 @@ export default function LoginPage() {
 
     // Form states
     const [loginForm, setLoginForm] = useState({
-        email: "",
-        password: ""
+        email: "tranphuoc1005@gmail.com",
+        password: "123456"
     });
 
     const [registerForm, setRegisterForm] = useState({

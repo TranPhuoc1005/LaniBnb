@@ -74,7 +74,6 @@ export const useChat = () => {
         }
     };
 
-    // Listen to messages
     useEffect(() => {
         if (!sessionId) return;
 
