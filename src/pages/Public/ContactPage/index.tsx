@@ -1,7 +1,5 @@
 import { useState } from 'react';
 import { Phone, Mail, MessageCircle, MapPin, Clock, Send, User, MessageSquare, Globe, Star, CheckCircle, ArrowRight, Facebook, Instagram, Twitter, ChevronDown, Video, Zap } from "lucide-react";
-import QuickSupport from '@/components/OnlineConsultation/QuickSupport';
-import ChatWidget from '@/components/OnlineConsultation/ChatWidget';
 
 export default function ContactPage() {
     const [formData, setFormData] = useState({
@@ -480,9 +478,6 @@ export default function ContactPage() {
                     </div>
                 </div>
             </section>
-
-            <ChatWidget />
-            <QuickSupport />
         </div>
     );
 }
