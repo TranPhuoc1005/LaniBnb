@@ -373,10 +373,6 @@ const ChatWidget: React.FC = () => {
         };
     };
 
-    const chatButtonStyle = isMobile ? {} : {
-        left: `${position.x}px`,
-        top: `${position.y}px`,
-    };
 
     return (
         <>
