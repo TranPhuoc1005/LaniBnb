@@ -8,7 +8,6 @@ const api = axios.create({
     },
 });
 
-console.log("API URL:", import.meta.env.VITE_API_URL);
 
 api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
     // Lấy token từ localStorage hoặc từ auth-storage

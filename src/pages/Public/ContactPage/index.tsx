@@ -124,7 +124,7 @@ export default function ContactPage() {
             color: "from-purple-500 to-pink-500",
             bgColor: "bg-purple-50",
             buttonText: "Đặt lịch",
-            action: () => window.open('https://calendly.com/lanibnb', '_blank')
+            action: () => window.open('#', '_blank')
         }
     ];
 

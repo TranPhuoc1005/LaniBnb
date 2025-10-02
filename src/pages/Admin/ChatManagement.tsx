@@ -1,29 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { 
-    MessageCircle, 
-    Send, 
-    Search, 
-    Phone,
-    Mail,
-    X,
-    CheckCheck,
-    Check,
-    AlertCircle,
-    Menu,
-    ArrowLeft,
-} from 'lucide-react';
-import { 
-    collection, 
-    query, 
-    orderBy, 
-    onSnapshot, 
-    addDoc, 
-    updateDoc,
-    doc,
-    serverTimestamp,
-    where,
-    Timestamp
-} from 'firebase/firestore';
+import { MessageCircle, Send, Search, Phone, Mail, X, CheckCheck, Check, AlertCircle, Menu, ArrowLeft } from 'lucide-react';
+import { collection, query, orderBy, onSnapshot, addDoc, updateDoc, doc, serverTimestamp, where, Timestamp } from 'firebase/firestore';
 import { db } from '@/firebase';
 
 interface ChatSession {

@@ -5,7 +5,6 @@ import { BrowserRouter } from "react-router-dom"
 import App from './App.tsx'
 import './index.css'
 
-console.log("loaded env" ,import.meta.env.VITE_API_URL)
 
 const queryClient = new  QueryClient({
   defaultOptions:{
