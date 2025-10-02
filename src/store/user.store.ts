@@ -1,9 +1,5 @@
 import type { User } from "@/interfaces/users.interface";
-import {
-    getUserByIdApi,
-    updateUserApi,
-    uploadAvatarApi,
-} from "@/services/users.api";
+import { getUserByIdApi, updateUserApi, uploadAvatarApi } from "@/services/users.api";
 import { create } from "zustand";
 
 type UserStore = {

@@ -347,7 +347,7 @@ export default function ListRoomPage() {
 
                 <Link 
                     to={`/room-detail/${room.id}`}
-                    className="sm:hidden mt-3 w-full py-2 bg-blue-600 text-white rounded-lg font-medium flex items-center justify-center space-x-2 hover:bg-blue-700 transition-colors"
+                    className="sm:hidden mt-3 w-full py-2 bg-gradient-to-r from-sky-300 to-blue-300 text-white rounded-lg font-medium flex items-center justify-center space-x-2 hover:bg-blue-700 transition-colors"
                 >
                     <Eye className="w-4 h-4" />
                     <span>Xem chi tiết</span>

@@ -1,17 +1,4 @@
-import {
-    MapPin,
-    Shield,
-    Clock,
-    Star,
-    Users,
-    Award,
-    Heart,
-    Zap,
-    CheckCircle,
-    Smartphone,
-    CreditCard,
-    Headphones,
-} from "lucide-react";
+import { MapPin, Shield, Clock, Star, Users, Award, Heart, Zap, CheckCircle, Smartphone, CreditCard, Headphones } from "lucide-react";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
@@ -183,7 +170,7 @@ export default function AboutUsSection() {
                     <div className="relative" data-aos="fade-left">
                         <Card className="relative bg-gradient-to-br from-blue-100 to-purple-100 rounded-3xl p-8 shadow-2xl">
                             <img
-                                src="https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"
+                                src="../images/aboutus_image1.png"
                                 alt="Luxury Hotel Room"
                                 className="w-full h-80 object-cover rounded-2xl shadow-lg"
                             />

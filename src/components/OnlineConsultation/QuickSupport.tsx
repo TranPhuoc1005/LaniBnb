@@ -10,7 +10,6 @@ const QuickSupport: React.FC = () => {
             title: "Live Chat",
             description: "Tư vấn trực tiếp với chuyên gia",
             action: () => {
-                // Trigger chat widget
                 const event = new CustomEvent('openChat');
                 window.dispatchEvent(event);
             },

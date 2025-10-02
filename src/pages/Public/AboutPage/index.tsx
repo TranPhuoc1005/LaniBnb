@@ -1,16 +1,5 @@
-"use client";
-
 import { Link } from "react-router-dom";
-import {
-    MapPin,
-    Award,
-    Zap,
-    Shield,
-    Gift,
-    ArrowRight,
-    ChevronDown,
-    ChevronRight,
-} from "lucide-react";
+import { MapPin, Award, Zap, Shield, Gift, ArrowRight, ChevronDown, ChevronRight } from "lucide-react";
 
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -63,7 +52,7 @@ const services = [
 
 const experiences = [
     {
-        image: "https://images.unsplash.com/photo-1564501049412-61c2a3083791?ixlib=rb-4.0.3&w=500&h=300&fit=crop",
+        image: "../images/about_image1.png",
         title: "Saigon Luxury Stay",
         location: "Quận 1, TP.HCM",
         rating: 4.9,
@@ -72,7 +61,7 @@ const experiences = [
         tags: ["City View", "Rooftop Pool", "Free Breakfast"],
     },
     {
-        image: "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?ixlib=rb-4.0.3&w=500&h=300&fit=crop",
+        image: "../images/about_image2.png",
         title: "Hanoi Heritage Hotel",
         location: "Hoàn Kiếm, Hà Nội",
         rating: 4.8,
@@ -81,7 +70,7 @@ const experiences = [
         tags: ["Old Quarter", "Cultural", "Walking Tour"],
     },
     {
-        image: "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?ixlib=rb-4.0.3&w=500&h=300&fit=crop",
+        image: "../images/about_image3.png",
         title: "Danang Beach Resort",
         location: "Mỹ Khê, Đà Nẵng",
         rating: 4.9,
@@ -96,7 +85,7 @@ const events = [
         date: "15-30 DEC",
         title: "Christmas & New Year Special",
         description: "Ưu đãi đến 40% cho kỳ nghỉ Giáng Sinh và Tết Dương lịch",
-        image: "https://images.unsplash.com/photo-1512389142860-9c449e58a543?ixlib=rb-4.0.3&w=400&h=200&fit=crop",
+        image: "../images/about_image4.png",
         discount: "40%",
         code: "XMAS2024",
     },
@@ -104,7 +93,7 @@ const events = [
         date: "20-25 JAN",
         title: "Tet Holiday Package",
         description: "Gói nghỉ dưỡng Tết đặc biệt với nhiều hoạt động văn hóa",
-        image: "https://images.unsplash.com/photo-1545558014-8692077e9b5c?ixlib=rb-4.0.3&w=400&h=200&fit=crop",
+        image: "../images/about_image5.png",
         discount: "35%",
         code: "TET2025",
     },
@@ -112,7 +101,7 @@ const events = [
         date: "14 FEB",
         title: "Valentine Romance",
         description: "Gói lãng mạn cho các cặp đôi với dinner và spa couple",
-        image: "https://images.unsplash.com/photo-1518998053901-5348d3961a04?ixlib=rb-4.0.3&w=400&h=200&fit=crop",
+        image: "../images/about_image6.png",
         discount: "25%",
         code: "LOVE2025",
     },
@@ -124,7 +113,7 @@ export default function AboutPage() {
             <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-r from-sky-300 to-blue-300">
                     <div className="absolute inset-0 bg-black/20"></div>
-                    <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?ixlib=rb-4.0.3&w=1920&h=1080&fit=crop')] bg-cover bg-center mix-blend-multiply"></div>
+                    <div className="absolute inset-0 bg-[url('../images/about_image7.png')] bg-cover bg-center mix-blend-multiply"></div>
                 </div>
                 <div className="relative z-10 text-center text-white max-w-5xl mx-auto px-6">
                     <h1 className="text-5xl md:text-7xl font-bold mb-8 leading-tight">

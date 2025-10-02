@@ -7,7 +7,7 @@ export default function HomeLayout() {
   return (
     <div className="wrapper">
         <Header />
-        <main className="mt-[52px] md:mt-[80px]">
+        <main className="mt-[70px] lg:mt-[80px]">
           <Outlet />
         </main>
         <Footer />

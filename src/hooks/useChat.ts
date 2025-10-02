@@ -1,13 +1,5 @@
 import { useState, useEffect } from 'react';
-import { 
-    collection, 
-    addDoc, 
-    query, 
-    orderBy, 
-    onSnapshot, 
-    serverTimestamp,
-    where 
-} from 'firebase/firestore';
+import { collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, where } from 'firebase/firestore';
 import { db } from '@/firebase';
 
 interface ChatMessage {

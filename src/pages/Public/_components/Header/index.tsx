@@ -274,7 +274,7 @@ export default function Header() {
             <div
                 className={`h_menu ${
                     isMenuOpen ? "active" : ""
-                } fixed inset-0 z-[100] bg-white top-[52px] md:top-[72px]`}
+                } fixed inset-0 z-[100] bg-white top-[70px] lg:top-[80px]`}
             >
                 <div className="flex md:flex-row flex-col h-full">
                     <div className="w-full md:w-1/2 bg-gray-900 text-white py-8 flex flex-col h-full md:h-auto">

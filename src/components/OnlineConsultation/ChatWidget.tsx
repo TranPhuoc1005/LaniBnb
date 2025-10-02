@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { MessageCircle, X, Send, User, Phone,Video,Paperclip,Smile,CheckCheck,Check,Move } from 'lucide-react';
-import { collection, addDoc, query, onSnapshot, updateDoc,doc,serverTimestamp,where,Timestamp} from 'firebase/firestore';
+import { MessageCircle, X, Send, User, Phone, Video, Paperclip, Smile, CheckCheck, Check, Move } from 'lucide-react';
+import { collection, addDoc, query, onSnapshot, updateDoc, doc, serverTimestamp, where, Timestamp } from 'firebase/firestore';
 import { db } from '@/firebase';
 
 interface ChatMessage {
@@ -31,8 +31,9 @@ const ChatWidget: React.FC = () => {
         phone: ''
     });
     const [unreadCount, setUnreadCount] = useState(0);
+    const [isMobile, setIsMobile] = useState(false);
     
-    const [position, setPosition] = useState<Position>({ x: window.innerWidth - 120, y: window.innerHeight - 120 });
+    const [position, setPosition] = useState<Position>({ x: 0, y: 0 });
     const [isDragging, setIsDragging] = useState(false);
     const [dragStart, setDragStart] = useState<Position>({ x: 0, y: 0 });
     const [isHovering, setIsHovering] = useState(false);
@@ -42,30 +43,38 @@ const ChatWidget: React.FC = () => {
     const widgetRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        const savedPosition = localStorage.getItem('chat-widget-position');
-        if (savedPosition) {
-            try {
-                const parsed = JSON.parse(savedPosition);
-                setPosition(parsed);
-            } catch (error) {
-                console.error('Error parsing saved position:', error);
-                setPosition({ x: window.innerWidth - 120, y: window.innerHeight - 120 });
+        const checkMobile = () => {
+            const width = window.innerWidth;
+            setIsMobile(width <= 768);
+            
+            const savedPosition = localStorage.getItem('chat-widget-position');
+            if (savedPosition) {
+                try {
+                    const parsed = JSON.parse(savedPosition);
+                    const buttonSize = width <= 768 ? 56 : 64;
+                    setPosition({
+                        x: Math.min(Math.max(parsed.x, 15), width - buttonSize - 15),
+                        y: Math.min(Math.max(parsed.y, 15), window.innerHeight - buttonSize - 15)
+                    });
+                } catch (error) {
+                    const buttonSize = width <= 768 ? 56 : 64;
+                    setPosition({ 
+                        x: width - buttonSize - 20, 
+                        y: window.innerHeight - buttonSize - 20 
+                    });
+                }
+            } else {
+                const buttonSize = width <= 768 ? 56 : 64;
+                setPosition({ 
+                    x: width - buttonSize - 20, 
+                    y: window.innerHeight - buttonSize - 20 
+                });
             }
-        } else {
-            setPosition({ x: window.innerWidth - 120, y: window.innerHeight - 120 });
-        }
-    }, []);
-
-    useEffect(() => {
-        const handleResize = () => {
-            setPosition(prev => ({
-                x: Math.min(prev.x, window.innerWidth - 120),
-                y: Math.min(prev.y, window.innerHeight - 120)
-            }));
         };
 
-        window.addEventListener('resize', handleResize);
-        return () => window.removeEventListener('resize', handleResize);
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
     }, []);
 
     const savePosition = (newPosition: Position) => {
@@ -88,6 +97,22 @@ const ChatWidget: React.FC = () => {
         document.body.style.cursor = 'grabbing';
     };
 
+    const handleTouchStart = (e: React.TouchEvent) => {
+        if (e.touches.length !== 1) return;
+        
+        e.preventDefault();
+        e.stopPropagation();
+        
+        const touch = e.touches[0];
+        setIsDragging(true);
+        setDragStart({
+            x: touch.clientX - position.x,
+            y: touch.clientY - position.y
+        });
+        
+        document.body.style.userSelect = 'none';
+    };
+
     const handleMouseMove = (e: MouseEvent) => {
         if (!isDragging) return;
         
@@ -98,7 +123,26 @@ const ChatWidget: React.FC = () => {
         
         const viewportWidth = window.innerWidth;
         const viewportHeight = window.innerHeight;
-        const buttonSize = 64;
+        const buttonSize = isMobile ? 56 : 64;
+        
+        const constrainedX = Math.max(15, Math.min(newX, viewportWidth - buttonSize - 15));
+        const constrainedY = Math.max(15, Math.min(newY, viewportHeight - buttonSize - 15));
+        
+        setPosition({ x: constrainedX, y: constrainedY });
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+        if (!isDragging || e.touches.length !== 1) return;
+        
+        e.preventDefault();
+        
+        const touch = e.touches[0];
+        const newX = touch.clientX - dragStart.x;
+        const newY = touch.clientY - dragStart.y;
+        
+        const viewportWidth = window.innerWidth;
+        const viewportHeight = window.innerHeight;
+        const buttonSize = isMobile ? 56 : 64;
         
         const constrainedX = Math.max(15, Math.min(newX, viewportWidth - buttonSize - 15));
         const constrainedY = Math.max(15, Math.min(newY, viewportHeight - buttonSize - 15));
@@ -116,17 +160,31 @@ const ChatWidget: React.FC = () => {
         savePosition(position);
     };
 
+    const handleTouchEnd = () => {
+        if (!isDragging) return;
+        
+        setIsDragging(false);
+        document.body.style.userSelect = '';
+        
+        savePosition(position);
+    };
+
     useEffect(() => {
         if (isDragging) {
             document.addEventListener('mousemove', handleMouseMove);
             document.addEventListener('mouseup', handleMouseUp);
             
+            document.addEventListener('touchmove', handleTouchMove, { passive: false });
+            document.addEventListener('touchend', handleTouchEnd);
+            
             return () => {
                 document.removeEventListener('mousemove', handleMouseMove);
                 document.removeEventListener('mouseup', handleMouseUp);
+                document.removeEventListener('touchmove', handleTouchMove);
+                document.removeEventListener('touchend', handleTouchEnd);
             };
         }
-    }, [isDragging, dragStart, position]);
+    }, [isDragging, dragStart, position, isMobile]);
 
     const handleClick = (e: React.MouseEvent) => {
         if (isDragging) {
@@ -272,22 +330,36 @@ const ChatWidget: React.FC = () => {
     };
 
     const getChatWindowStyle = () => {
-        const buttonSize = 64;
-        const chatWidth = 384;
-        const chatHeight = 500;
+        const buttonSize = isMobile ? 56 : 64;
+        const chatWidth = isMobile ? Math.min(320, window.innerWidth - 32) : Math.min(384, window.innerWidth - 32);
+        const chatHeight = isMobile ? Math.min(480, window.innerHeight - 100) : Math.min(500, window.innerHeight - 32);
         const offset = 8;
         
         let windowX = position.x;
         let windowY = position.y;
         
-        if (position.x > window.innerWidth / 2) {
-            windowX = position.x - chatWidth - offset;
+        if (isMobile) {
+            if (position.y > chatHeight + offset + buttonSize) {
+                windowY = position.y - chatHeight - offset;
+                windowX = Math.max(offset, Math.min(position.x - chatWidth/2 + buttonSize/2, window.innerWidth - chatWidth - offset));
+            } else {
+                if (position.x > window.innerWidth / 2) {
+                    windowX = Math.max(offset, position.x - chatWidth - offset);
+                } else {
+                    windowX = Math.min(position.x + buttonSize + offset, window.innerWidth - chatWidth - offset);
+                }
+                windowY = Math.max(offset, Math.min(position.y, window.innerHeight - chatHeight - offset));
+            }
         } else {
-            windowX = position.x + buttonSize + offset;
-        }
-        
-        if (position.y > window.innerHeight - chatHeight - offset) {
-            windowY = position.y - chatHeight + buttonSize;
+            if (position.x > window.innerWidth / 2) {
+                windowX = position.x - chatWidth - offset;
+            } else {
+                windowX = position.x + buttonSize + offset;
+            }
+            
+            if (position.y > window.innerHeight - chatHeight - offset) {
+                windowY = position.y - chatHeight + buttonSize;
+            }
         }
         
         windowX = Math.max(offset, Math.min(windowX, window.innerWidth - chatWidth - offset));
@@ -296,16 +368,21 @@ const ChatWidget: React.FC = () => {
         return {
             left: `${windowX}px`,
             top: `${windowY}px`,
-            bottom: 'auto',
-            right: 'auto'
+            width: `${chatWidth}px`,
+            height: `${chatHeight}px`
         };
+    };
+
+    const chatButtonStyle = isMobile ? {} : {
+        left: `${position.x}px`,
+        top: `${position.y}px`,
     };
 
     return (
         <>
             <div 
                 ref={widgetRef}
-                className="fixed z-200"
+                className="fixed z-50"
                 style={{
                     left: `${position.x}px`,
                     top: `${position.y}px`,
@@ -319,23 +396,39 @@ const ChatWidget: React.FC = () => {
                     <button
                         onClick={handleClick}
                         onMouseDown={handleMouseDown}
-                        className={`relative bg-gradient-to-r from-sky-500 to-blue-600 text-white p-4 rounded-full shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 ${
+                        onTouchStart={handleTouchStart}
+                        className={`relative bg-gradient-to-r from-sky-500 to-blue-600 text-white rounded-full shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 ${
                             isDragging ? 'scale-110 shadow-2xl' : ''
+                        } ${
+                            isMobile 
+                                ? 'p-3 w-14 h-14' 
+                                : 'p-4 w-16 h-16'
                         }`}
-                        style={{ touchAction: 'none' }} 
+                        style={{ touchAction: 'none' }}
                     >
-                        <MessageCircle className="w-6 h-6" />
+                        <MessageCircle className={isMobile ? "w-8 h-8" : "w-8 h-8"} />
                         {unreadCount > 0 && (
-                            <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center animate-pulse">
+                            <span className={`absolute bg-red-500 text-white text-xs rounded-full flex items-center justify-center animate-pulse ${
+                                isMobile 
+                                    ? '-top-1 -right-1 w-5 h-5' 
+                                    : '-top-2 -right-2 w-6 h-6'
+                            }`}>
                                 {unreadCount > 9 ? '9+' : unreadCount}
                             </span>
                         )}
                     </button>
                     
-                    {isHovering && !isOpen && (
-                        <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-black text-white text-xs px-2 py-1 rounded whitespace-nowrap opacity-75">
+                    {!isMobile && isHovering && !isOpen && (
+                        <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-black text-white text-xs px-2 py-1 rounded whitespace-nowrap opacity-75 z-10">
                             <Move className="w-3 h-3 inline mr-1" />
                             Kéo để di chuyển
+                        </div>
+                    )}
+                    
+                    {isMobile && isHovering && !isOpen && (
+                        <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-black text-white text-xs px-2 py-1 rounded whitespace-nowrap opacity-75 z-10">
+                            <Move className="w-3 h-3 inline mr-1" />
+                            Giữ để di chuyển
                         </div>
                     )}
                 </div>
@@ -343,54 +436,56 @@ const ChatWidget: React.FC = () => {
 
             {isOpen && (
                 <div 
-                    className="fixed w-80 sm:w-96 h-[500px] bg-white rounded-2xl shadow-2xl border border-gray-200 z-40 flex flex-col overflow-hidden"
+                    className="fixed bg-white rounded-2xl shadow-2xl border border-gray-200 z-40 flex flex-col overflow-hidden"
                     style={getChatWindowStyle()}
                 >
-                    <div className="bg-gradient-to-r from-sky-500 to-blue-600 text-white p-4 flex items-center justify-between">
-                        <div className="flex items-center space-x-3">
-                            <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
-                                <User className="w-5 h-5" />
+                    <div className="bg-gradient-to-r from-sky-500 to-blue-600 text-white p-3 sm:p-4 flex items-center justify-between flex-shrink-0">
+                        <div className="flex items-center space-x-2 sm:space-x-3 min-w-0 flex-1">
+                            <div className={`${isMobile ? 'w-8 h-8' : 'w-10 h-10'} bg-white/20 rounded-full flex items-center justify-center flex-shrink-0`}>
+                                <User className={`${isMobile ? 'w-4 h-4' : 'w-5 h-5'}`} />
                             </div>
-                            <div>
-                                <h3 className="font-semibold">Tư vấn trực tuyến</h3>
-                                <p className="text-xs opacity-90">
+                            <div className="min-w-0 flex-1">
+                                <h3 className={`font-semibold truncate ${isMobile ? 'text-sm' : 'text-base'}`}>
+                                    Tư vấn trực tuyến
+                                </h3>
+                                <p className="text-xs opacity-90 truncate">
                                     {isStarted ? (
                                         messages.length > 0 ? 'Đang kết nối...' : 'Chờ kết nối...'
                                     ) : 'Hỗ trợ 24/7'}
                                 </p>
                             </div>
                         </div>
-                        <div className="flex items-center space-x-2">
+                        <div className="flex items-center space-x-1 sm:space-x-2 flex-shrink-0">
                             <button className="p-1 hover:bg-white/20 rounded-full transition-colors">
-                                <Phone className="w-4 h-4" />
+                                <Phone className={`${isMobile ? 'w-3 h-3' : 'w-4 h-4'}`} />
                             </button>
                             <button className="p-1 hover:bg-white/20 rounded-full transition-colors">
-                                <Video className="w-4 h-4" />
+                                <Video className={`${isMobile ? 'w-3 h-3' : 'w-4 h-4'}`} />
                             </button>
                             <button 
                                 onClick={() => setIsOpen(false)}
                                 className="p-1 hover:bg-white/20 rounded-full transition-colors"
                             >
-                                <X className="w-4 h-4" />
+                                <X className={`${isMobile ? 'w-3 h-3' : 'w-4 h-4'}`} />
                             </button>
                         </div>
                     </div>
 
                     {!isStarted ? (
-                        <div className="p-6 flex-1 flex flex-col justify-center">
-                            <div className="text-center mb-6">
-                                <div className="w-16 h-16 bg-gradient-to-r from-sky-100 to-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <MessageCircle className="w-8 h-8 text-sky-500" />
+                        <div className="p-4 sm:p-6 flex-1 flex flex-col justify-center">
+                            <div className="text-center mb-4 sm:mb-6">
+                                <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-r from-sky-100 to-blue-100 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
+                                    <MessageCircle className="w-6 h-6 sm:w-8 sm:h-8 text-sky-500" />
                                 </div>
-                                <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                                <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2">
                                     Tư vấn miễn phí
                                 </h3>
-                                <p className="text-gray-600 text-sm">
+                                <p className="text-gray-600 text-xs sm:text-sm">
                                     Nhập thông tin để bắt đầu chat với chuyên gia
                                 </p>
                             </div>
 
-                            <div className="space-y-4">
+                            <div className="space-y-3 sm:space-y-4">
                                 <input
                                     type="text"
                                     placeholder="Họ và tên *"
@@ -414,7 +509,7 @@ const ChatWidget: React.FC = () => {
                                 />
                                 <button
                                     onClick={startChat}
-                                    className="w-full bg-gradient-to-r from-sky-500 to-blue-600 text-white py-2 rounded-lg font-medium hover:from-sky-600 hover:to-blue-700 transition-all"
+                                    className="w-full bg-gradient-to-r from-sky-500 to-blue-600 text-white py-2 rounded-lg font-medium hover:from-sky-600 hover:to-blue-700 transition-all text-sm sm:text-base"
                                 >
                                     Bắt đầu chat
                                 </button>
@@ -424,7 +519,7 @@ const ChatWidget: React.FC = () => {
                         <>
                             <div 
                                 ref={chatContainerRef}
-                                className="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50"
+                                className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-2 sm:space-y-3 bg-gray-50"
                             >
                                 {messages.map((message) => (
                                     <div
@@ -433,12 +528,12 @@ const ChatWidget: React.FC = () => {
                                             message.sender === 'user' ? 'justify-end' : 'justify-start'
                                         }`}
                                     >
-                                        <div className={`max-w-[80%] ${
+                                        <div className={`max-w-[85%] sm:max-w-[80%] ${
                                             message.sender === 'user' 
                                                 ? 'bg-gradient-to-r from-sky-500 to-blue-600 text-white rounded-l-2xl rounded-tr-sm' 
                                                 : 'bg-white text-gray-900 rounded-r-2xl rounded-tl-sm shadow-sm'
-                                        } px-4 py-2`}>
-                                            <p className="text-sm">{message.text}</p>
+                                        } px-3 py-2 sm:px-4`}>
+                                            <p className="text-xs sm:text-sm leading-relaxed break-words">{message.text}</p>
                                             <div className={`flex items-center justify-between mt-1 ${
                                                 message.sender === 'user' ? 'text-white/70' : 'text-gray-500'
                                             }`}>
@@ -446,7 +541,7 @@ const ChatWidget: React.FC = () => {
                                                     {formatTime(message.timestamp)}
                                                 </span>
                                                 {message.sender === 'user' && (
-                                                    <div className="ml-2">
+                                                    <div className="ml-2 flex-shrink-0">
                                                         {message.read ? (
                                                             <CheckCheck className="w-3 h-3" />
                                                         ) : (
@@ -462,33 +557,33 @@ const ChatWidget: React.FC = () => {
                                 <div ref={messagesEndRef} />
                             </div>
 
-                            <div className="p-4 bg-white border-t border-gray-200">
+                            <div className="p-3 sm:p-4 bg-white border-t border-gray-200 flex-shrink-0">
                                 <form onSubmit={sendMessage} className="flex items-center space-x-2">
                                     <button 
                                         type="button"
-                                        className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
+                                        className="p-1.5 sm:p-2 text-gray-400 hover:text-gray-600 transition-colors flex-shrink-0"
                                     >
-                                        <Paperclip className="w-4 h-4" />
+                                        <Paperclip className="w-3 h-3 sm:w-4 sm:h-4" />
                                     </button>
                                     <input
                                         type="text"
                                         value={newMessage}
                                         onChange={(e) => setNewMessage(e.target.value)}
                                         placeholder="Nhập tin nhắn..."
-                                        className="flex-1 px-3 py-2 border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-sky-500 text-sm"
+                                        className="flex-1 min-w-0 px-3 py-1.5 sm:py-2 border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-sky-500 text-xs sm:text-sm"
                                     />
                                     <button 
                                         type="button"
-                                        className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
+                                        className="p-1.5 sm:p-2 text-gray-400 hover:text-gray-600 transition-colors flex-shrink-0 hidden sm:block"
                                     >
-                                        <Smile className="w-4 h-4" />
+                                        <Smile className="w-3 h-3 sm:w-4 sm:h-4" />
                                     </button>
                                     <button
                                         type="submit"
                                         disabled={!newMessage.trim()}
-                                        className="p-2 bg-gradient-to-r from-sky-500 to-blue-600 text-white rounded-full hover:from-sky-600 hover:to-blue-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                                        className="p-1.5 sm:p-2 bg-gradient-to-r from-sky-500 to-blue-600 text-white rounded-full hover:from-sky-600 hover:to-blue-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0"
                                     >
-                                        <Send className="w-4 h-4" />
+                                        <Send className="w-3 h-3 sm:w-4 sm:h-4" />
                                     </button>
                                 </form>
                             </div>

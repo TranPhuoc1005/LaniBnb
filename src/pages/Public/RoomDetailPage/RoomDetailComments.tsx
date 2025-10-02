@@ -1,15 +1,5 @@
 import React, { useEffect, useState, useCallback, useMemo } from "react";
-import {
-    Star,
-    Heart,
-    MessageCircle,
-    Send,
-    Filter,
-    Award,
-    Calendar,
-    Loader2,
-    AlertTriangle,
-} from "lucide-react";
+import { Star, Heart, MessageCircle, Send, Filter, Award, Calendar, Loader2, AlertTriangle } from "lucide-react";
 import { useCommentStore } from "@/store/comment.store";
 import { userAuthStore } from "@/store/auth.store";
 import { useBookingStore } from "@/store/booking.store";
@@ -202,7 +192,6 @@ export default function RoomDetailComments({
         >
             <div className="p-6">
                 <div className="flex items-center justify-between mb-6">
-                    {/* Hiển thị title và số lượng đánh giá */}
                     <div className="flex items-center space-x-3">
                         <div className="inline-flex items-center justify-center w-10 h-10 bg-gradient-to-r from-sky-300 to-blue-300 rounded-full">
                             <MessageCircle className="w-5 h-5 text-white" />
@@ -218,7 +207,6 @@ export default function RoomDetailComments({
                     </div>
                 </div>
 
-                {/* Warning messages */}
                 {!canComment && (
                     <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
                         <div className="flex items-center space-x-2">
@@ -271,7 +259,6 @@ export default function RoomDetailComments({
                     </div>
                 )}
 
-                {/* Comment Form - Only show if comments are enabled */}
                 {canComment &&
                     isAuthenticated &&
                     hasBookedThisRoom &&

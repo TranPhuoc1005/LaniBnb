@@ -7,10 +7,6 @@ export const getCommentsApi = async (): Promise<Comments[]> => {
 }
 
 export const submitCommitApi = async (comment: Omit<Comments, "id" | "tenNguoiBinhLuan" | "avatar">): Promise<Comments> => {
-    // Log để debug
-    console.log("Submitting comment:", comment);
-    
-    // Kiểm tra xem có đúng format ngày không
     const commentData = {
         maPhong: comment.maPhong,
         maNguoiBinhLuan: comment.maNguoiBinhLuan,

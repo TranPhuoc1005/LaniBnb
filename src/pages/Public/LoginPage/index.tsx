@@ -18,7 +18,6 @@ export default function LoginPage() {
         isAuthenticated 
     } = userAuthStore();
 
-    // Form states
     const [loginForm, setLoginForm] = useState({
         email: "tranphuoc1005@gmail.com",
         password: "123456"
@@ -34,19 +33,16 @@ export default function LoginPage() {
         role: "USER" as "USER" | "ADMIN"
     });
 
-    // Redirect if already authenticated
     useEffect(() => {
         if (isAuthenticated) {
             navigate("/");
         }
     }, [isAuthenticated, navigate]);
 
-    // Clear error when switching forms
     useEffect(() => {
         clearError();
     }, [isLogin, clearError]);
 
-    // Handle login
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
         clearError();
@@ -65,7 +61,6 @@ export default function LoginPage() {
         }
     };
 
-    // Handle register
     const handleRegister = async (e: React.FormEvent) => {
         e.preventDefault();
         clearError();
@@ -85,7 +80,6 @@ export default function LoginPage() {
         });
 
         if (success) {
-            // Reset form đăng ký
             setRegisterForm({
                 name: "",
                 email: "",
@@ -96,10 +90,7 @@ export default function LoginPage() {
                 role: "USER"
             });
             
-            // Chuyển về form đăng nhập
             setIsLogin(true);
-            
-            // Có thể thêm thông báo thành công (optional)
             // toast.success("Đăng ký thành công! Vui lòng đăng nhập.");
         }
     };
@@ -123,7 +114,6 @@ export default function LoginPage() {
                     <h1 className="mt-2 text-2xl font-bold text-gray-800">LaniBnb</h1>
                 </div>
 
-                {/* Error Message */}
                 {error && (
                     <motion.div
                         initial={{ opacity: 0, y: -10 }}
@@ -135,7 +125,6 @@ export default function LoginPage() {
                     </motion.div>
                 )}
 
-                {/* Animate form */}
                 <AnimatePresence mode="wait">
                     {isLogin ? (
                         <motion.div
@@ -281,7 +270,6 @@ export default function LoginPage() {
                                     />
                                 </div>
                                 
-                                {/* Gender Selection */}
                                 <div className="flex items-center space-x-4 px-3 py-2 bg-gray-50 rounded-lg">
                                     <span className="text-sm text-gray-600 font-medium">Giới tính:</span>
                                     <label className="flex items-center space-x-2 cursor-pointer">
@@ -308,7 +296,6 @@ export default function LoginPage() {
                                     </label>
                                 </div>
 
-                                {/* Role Selection */}
                                 <div className="relative">
                                     <Shield className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
                                     <select

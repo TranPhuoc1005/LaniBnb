@@ -1,24 +1,5 @@
 import { useState } from 'react';
-import {
-    Phone,
-    Mail,
-    MessageCircle,
-    MapPin,
-    Clock,
-    Send,
-    User,
-    MessageSquare,
-    Globe,
-    Star,
-    CheckCircle,
-    ArrowRight,
-    Facebook,
-    Instagram,
-    Twitter,
-    ChevronDown,
-    Video,
-    Zap
-} from "lucide-react";
+import { Phone, Mail, MessageCircle, MapPin, Clock, Send, User, MessageSquare, Globe, Star, CheckCircle, ArrowRight, Facebook, Instagram, Twitter, ChevronDown, Video, Zap } from "lucide-react";
 import QuickSupport from '@/components/OnlineConsultation/QuickSupport';
 import ChatWidget from '@/components/OnlineConsultation/ChatWidget';
 
@@ -180,7 +161,7 @@ export default function ContactPage() {
                 <div 
                     className="absolute inset-0 bg-cover bg-center bg-no-repeat"
                     style={{
-                        backgroundImage: `url('https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80')`
+                        backgroundImage: `url('../images/contact_image1.avif')`
                     }}
                 ></div>
                 <div className="absolute inset-0 bg-black/40"></div>
