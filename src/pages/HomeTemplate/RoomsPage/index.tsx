@@ -87,11 +87,6 @@ export default function ListRoomPage() {
     const { data: roomsData, isLoading: roomsLoading, error: roomsError } = useListRoom(1, 1000);
     const { data: locationsData, isLoading: locationsLoading } = useListLocation(1, 1000);
     
-    const { data: locationRooms } = useLocationOfRoom(
-        urlLocationId ? parseInt(urlLocationId) : 0,
-        { enabled: !!urlLocationId }
-    );
-
     const allRooms = roomsData?.data || [];
     const locations = locationsData?.data || [];
 
