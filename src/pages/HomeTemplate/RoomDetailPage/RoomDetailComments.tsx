@@ -19,16 +19,12 @@ export default function RoomDetailComments({
     const { user } = useAuthStore();
     const isAuthenticated = !!user;
 
-    // ✅ Fetch comments
     const { data: comments = [] } = useListComments();
 
-    // ✅ Fetch users
     const { data: users = [] } = useListUsers();
 
-    // ✅ Fetch user bookings
     const { data: bookings = [] } = useDetailUserBooking(isAuthenticated && user ? String(user.user.id) : "", { enabled: isAuthenticated && !!user });
 
-    // ✅ Create comment mutation
     const createCommentMutation = useSubmitComment({
         onSuccess: () => {
             setCommentForm({
@@ -433,7 +429,6 @@ export default function RoomDetailComments({
                             </div>
                         </div>
 
-                        {/* Reviews List */}
                         <div className="lg:col-span-2 max-h-[735px] overflow-y-auto">
                             <div className="space-y-4">
                                 {filteredReviews
@@ -541,8 +536,7 @@ export default function RoomDetailComments({
                             Chưa có đánh giá nào
                         </h3>
                         <p className="text-gray-600 mb-4">
-                            Hãy là người đầu tiên chia sẻ trải nghiệm về phòng
-                            này!
+                            Hãy là người đầu tiên chia sẻ trải nghiệm về phòng này!
                         </p>
                     </div>
                 )}

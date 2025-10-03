@@ -17,16 +17,13 @@ export default function RoomDetailPage() {
     
     const roomId = id ? parseInt(id) : 0;
     
-    // ✅ Fetch room detail
     const { data: roomDetail, isLoading: roomLoading, error: roomError } = useDetailRoom(roomId);
     
-    // ✅ Fetch location detail khi có maViTri
     const { data: locationDetail } = useDetailLocation(
         roomDetail?.maViTri || 0,
         { enabled: !!roomDetail?.maViTri }
     );
     
-    // ✅ Create booking mutation
     const createBookingMutation = useCreateBooking({
         onSuccess: () => {
             setShowBookingModal(true);
@@ -80,7 +77,7 @@ export default function RoomDetailPage() {
 
     const handleBooking = async () => {
         if (!isAuthenticated || !user) {
-            navigate("/auth/signin");
+            navigate("/auth/login");
             return;
         }
 
@@ -171,18 +168,6 @@ export default function RoomDetailPage() {
             </div>
         );
     }
-
-    // Combine room with location data
-    const roomWithLocation = {
-        ...roomDetail,
-        viTri: locationDetail ? {
-            id: locationDetail.id,
-            tenViTri: locationDetail.tenViTri,
-            tinhThanh: locationDetail.tinhThanh,
-            quocGia: locationDetail.quocGia,
-            hinhAnh: locationDetail.hinhAnh
-        } : undefined
-    };
 
     return (
         <div className="min-h-screen bg-gray-50">

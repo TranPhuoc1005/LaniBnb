@@ -1,23 +1,10 @@
 import { useState, useEffect } from "react";
-import {
-    MapPin,
-    Star,
-    Heart,
-    Eye,
-    ChevronLeft,
-    ChevronRight,
-} from "lucide-react";
+import { MapPin, Star, Heart, Eye, ChevronLeft, ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useListRoom } from "@/hooks/useRoomQuery";
 import { useListLocation } from "@/hooks/useLocationQuery";
 
-import {
-    Carousel,
-    CarouselContent,
-    CarouselItem,
-    CarouselNext,
-    CarouselPrevious,
-} from "@/components/ui/carousel";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -90,7 +77,6 @@ export default function ListRoom() {
         };
     });
 
-    // ✅ group theo location
     const transformRoomsToAreas = (): AreaSection[] => {
         const grouped = enhancedRooms.reduce((acc, room) => {
             const key = `${room.country}-${room.city}`;

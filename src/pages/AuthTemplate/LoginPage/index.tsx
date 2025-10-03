@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { User, Lock, Hotel, ArrowLeft, ArrowRight, Mail, AlertCircle, Loader2, Phone, Calendar, Shield } from "lucide-react";
+import { User, Lock, Hotel, ArrowRight, Mail, AlertCircle, Loader2, Phone, Calendar } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuthStore } from "@/store/auth.store";
@@ -28,14 +28,12 @@ export default function LoginPage() {
         role: "USER" as "USER" | "ADMIN"
     });
 
-    // Redirect if authenticated
     useEffect(() => {
         if (user) {
             navigate("/");
         }
     }, [user, navigate]);
 
-    // Reset error when switching forms
     useEffect(() => {
         loginMutation.reset();
         registerMutation.reset();

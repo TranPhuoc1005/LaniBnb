@@ -1,14 +1,5 @@
 import { Link } from "react-router-dom";
-import {
-    MapPin,
-    Award,
-    Zap,
-    Shield,
-    Gift,
-    ArrowRight,
-    ChevronDown,
-    ChevronRight,
-} from "lucide-react";
+import { MapPin, Award, Zap, Shield, Gift, ArrowRight, ChevronDown, ChevronRight } from "lucide-react";
 
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";

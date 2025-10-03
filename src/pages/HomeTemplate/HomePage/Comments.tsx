@@ -16,14 +16,12 @@ export default function CommentsSection() {
     const { user } = useAuthStore();
     const isAuthenticated = !!user;
     
-    // Sử dụng React Query hooks
     const { data: comments = [], isLoading: commentsLoading } = useListComments();
     const { data: users = [], isLoading: usersLoading } = useListUsers();
 
     const [likedReviews, setLikedReviews] = useState<Set<number>>(new Set());
     const [filterRating, setFilterRating] = useState<number | null>(null);
 
-    // Merge comments với user data
     const reviewsList: CommentItem[] = useMemo(() => {
         return comments.map((comment) => {
             const user = users.find(u => u.id === comment.maNguoiBinhLuan);
@@ -35,29 +33,24 @@ export default function CommentsSection() {
         });
     }, [comments, users]);
 
-    // Lọc và sort reviews để hiển thị
     const allReviews = useMemo(() => {
         const sortedReviews = [...reviewsList]
             .sort((a, b) => new Date(b.ngayBinhLuan).getTime() - new Date(a.ngayBinhLuan).getTime());
         
-        // Nếu chưa đăng nhập, chỉ hiển thị 3 review mới nhất
         return isAuthenticated ? sortedReviews.slice(0, 10) : sortedReviews.slice(0, 3);
     }, [reviewsList, isAuthenticated]);
 
-    // Áp dụng filter theo rating
     const filteredReviews = useMemo(() => {
         return filterRating 
             ? allReviews.filter((review) => review.saoBinhLuan === filterRating)
             : allReviews;
     }, [allReviews, filterRating]);
 
-    // Tính average rating
     const averageRating = useMemo(() => {
         if (reviewsList.length === 0) return 0;
         return reviewsList.reduce((sum, review) => sum + review.saoBinhLuan, 0) / reviewsList.length;
     }, [reviewsList]);
 
-    // Tính rating distribution
     const ratingDistribution = useMemo(() => {
         return [5, 4, 3, 2, 1].map((rating) => ({
             rating,
@@ -102,7 +95,6 @@ export default function CommentsSection() {
         ));
     };
 
-    // Loading state
     const loading = commentsLoading || usersLoading;
 
     if (loading) {
@@ -147,9 +139,7 @@ export default function CommentsSection() {
                 </div>
 
                 <div className="grid lg:grid-cols-3 gap-8">
-                    {/* Sidebar - Rating Overview & Filters */}
                     <div className="lg:col-span-1 space-y-6" data-aos="fade-right">
-                        {/* Rating Summary Card */}
                         <Card className="bg-white/70 backdrop-blur-sm shadow-lg border-white/20">
                             <CardContent className="p-6">
                                 <div className="text-center mb-6">
@@ -169,7 +159,6 @@ export default function CommentsSection() {
                                     </p>
                                 </div>
 
-                                {/* Rating Distribution */}
                                 <div className="space-y-3">
                                     {ratingDistribution.map((item) => (
                                         <div
@@ -193,7 +182,6 @@ export default function CommentsSection() {
                             </CardContent>
                         </Card>
 
-                        {/* Filter Card */}
                         <Card className="bg-white/70 backdrop-blur-sm shadow-lg border-white/20">
                             <CardHeader>
                                 <CardTitle className="flex items-center text-lg">
@@ -237,7 +225,6 @@ export default function CommentsSection() {
                         </Card>
                     </div>
 
-                    {/* Reviews List */}
                     <div className="lg:col-span-2" data-aos="fade-left">
                         <div className="max-h-[800px] overflow-y-auto pr-2 space-y-4">
                             {filteredReviews.length === 0 ? (

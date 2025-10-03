@@ -84,11 +84,9 @@ export default function ListRoomPage() {
     });
     const roomsPerPage = 12;
 
-    // ✅ Sử dụng React Query hooks
     const { data: roomsData, isLoading: roomsLoading, error: roomsError } = useListRoom(1, 1000);
     const { data: locationsData, isLoading: locationsLoading } = useListLocation(1, 1000);
     
-    // Lấy rooms theo location nếu có urlLocationId
     const { data: locationRooms } = useLocationOfRoom(
         urlLocationId ? parseInt(urlLocationId) : 0,
         { enabled: !!urlLocationId }
@@ -97,7 +95,6 @@ export default function ListRoomPage() {
     const allRooms = roomsData?.data || [];
     const locations = locationsData?.data || [];
 
-    // Map location data to rooms
     const roomsWithLocationData = useMemo(() => {
         return allRooms.map(room => {
             const location = locations.find(loc => loc.id === room.maViTri);
@@ -138,19 +135,15 @@ export default function ListRoomPage() {
 
     const filteredAndSortedRooms = useMemo(() => {
         let filtered = roomsWithLocationData.filter(room => {
-            // City filter
             const cityMatch = selectedCity === "Tất cả" || room.city === selectedCity;
             
-            // Price filter
             const priceMatch = room.price >= priceRange.min && room.price <= priceRange.max;
             
-            // Search filter
             const searchMatch = searchTerm === "" || 
                 room.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                 room.area.toLowerCase().includes(searchTerm.toLowerCase()) ||
                 room.city.toLowerCase().includes(searchTerm.toLowerCase());
             
-            // Guest capacity filter (from URL params)
             let guestMatch = true;
             if (urlGuests) {
                 const guestCount = parseInt(urlGuests);
@@ -158,7 +151,6 @@ export default function ListRoomPage() {
                 guestMatch = roomData ? roomData.khach >= guestCount : true;
             }
             
-            // Location filter
             let locationMatch = true;
             if (urlLocationId) {
                 const locationId = parseInt(urlLocationId);
@@ -169,7 +161,6 @@ export default function ListRoomPage() {
             return cityMatch && priceMatch && searchMatch && guestMatch && locationMatch;
         });
 
-        // Sorting
         switch (sortBy) {
             case "price-low":
                 filtered.sort((a, b) => a.price - b.price);
@@ -225,7 +216,6 @@ export default function ListRoomPage() {
 
     const hasSearchParams = urlLocationId || urlCheckIn || urlCheckOut || urlGuests;
 
-    // Loading state
     if (roomsLoading || locationsLoading) {
         return (
             <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center">
@@ -237,7 +227,6 @@ export default function ListRoomPage() {
         );
     }
 
-    // Error state
     if (roomsError) {
         return (
             <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center">

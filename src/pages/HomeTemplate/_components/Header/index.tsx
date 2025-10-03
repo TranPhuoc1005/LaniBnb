@@ -12,7 +12,6 @@ import React, { useState, useRef, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/store/auth.store";
 import { useListLocation } from "@/hooks/useLocationQuery";
-import { locationManagementStore } from "@/store/locationManagement.store";
 import "./_header.scss";
 
 interface MenuContent {
@@ -33,8 +32,10 @@ export default function Header() {
     const location = useLocation();
     const navigate = useNavigate();
     const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
-    const [isUserDropdownOpen, setIsUserDropdownOpen] = useState<boolean>(false);
-    const [mobileSelectedItem, setMobileSelectedItem] = useState<string>("rooms");
+    const [isUserDropdownOpen, setIsUserDropdownOpen] =
+        useState<boolean>(false);
+    const [mobileSelectedItem, setMobileSelectedItem] =
+        useState<string>("rooms");
     const [indicatorStyle, setIndicatorStyle] = useState({ left: 0, width: 0 });
     const navRef = useRef<HTMLElement>(null);
     const activeItemRef = useRef<HTMLAnchorElement>(null);
@@ -43,11 +44,9 @@ export default function Header() {
     const { user, clearUser } = useAuthStore();
     const isAuthenticated = !!user;
 
-    const { setIdLocation } = locationManagementStore();
     const { data, isLoading: locationsLoading } = useListLocation(1, 1000);
     const locations = data?.data || [];
 
-    // ✅ Menu items
     const menuItems: MenuItem[] = [
         {
             id: "home",
@@ -100,19 +99,16 @@ export default function Header() {
               ]),
     ];
 
-    // ✅ Avatar helper
     const getAvatarText = (name: string) => {
         return name ? name.charAt(0).toUpperCase() : "U";
     };
 
-    // ✅ Logout
     const handleLogout = () => {
         clearUser();
         setIsUserDropdownOpen(false);
         navigate("/");
     };
 
-    // ✅ Close dropdown when clicking outside
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (
@@ -132,7 +128,6 @@ export default function Header() {
         };
     }, [isUserDropdownOpen]);
 
-    // ✅ Menu indicator
     const updateIndicator = (element: HTMLElement) => {
         if (navRef.current && element) {
             const navRect = navRef.current.getBoundingClientRect();
@@ -172,12 +167,10 @@ export default function Header() {
 
     return (
         <>
-            {/* ✅ Header chính */}
             <header className="glass-effect bg-white/90 shadow-md fixed left-0 right-0 top-0 z-101">
                 <div className="max-w-6xl mx-auto flex justify-between items-center py-2 px-5">
                     <h1 className="text-3xl lg:text-4xl font-bold">LaniBnb</h1>
 
-                    {/* ✅ Menu desktop */}
                     <nav
                         ref={navRef}
                         className="md:flex hidden space-x-1 lg:space-x-4 relative"
@@ -215,7 +208,6 @@ export default function Header() {
                             );
                         })}
 
-                        {/* ✅ Dropdown người dùng */}
                         {isAuthenticated && user && (
                             <div className="relative -top-1" ref={dropdownRef}>
                                 <button
@@ -235,9 +227,7 @@ export default function Header() {
                                             />
                                         ) : (
                                             <div className="w-8 h-8 bg-gradient-to-r from-sky-400 to-blue-500 rounded-md flex items-center justify-center text-white text-xs font-semibold">
-                                                {getAvatarText(
-                                                    user.user.name
-                                                )}
+                                                {getAvatarText(user.user.name)}
                                             </div>
                                         )}
                                         <ChevronDown className="w-3 h-3 absolute -bottom-1 -right-1 bg-white" />
@@ -289,7 +279,6 @@ export default function Header() {
                         )}
                     </nav>
 
-                    {/* ✅ Nút menu mobile */}
                     <button
                         onClick={() => setIsMenuOpen(!isMenuOpen)}
                         className="relative p-1 lg:p-3 rounded-lg hover:bg-gray-100 transition-colors group focus:outline-none"
@@ -372,39 +361,51 @@ export default function Header() {
                                                 />
                                             ) : (
                                                 <div className="w-12 h-12 bg-gradient-to-r from-sky-400 to-blue-500 rounded-full flex items-center justify-center text-white text-lg font-semibold">
-                                                    {getAvatarText(user.user.name)}
+                                                    {getAvatarText(
+                                                        user.user.name
+                                                    )}
                                                 </div>
                                             )}
                                             <div>
-                                                <div className="text-white font-medium">{user.user.name}</div>
-                                                <div className="text-gray-400 text-sm">{user.user.email}</div>
+                                                <div className="text-white font-medium">
+                                                    {user.user.name}
+                                                </div>
+                                                <div className="text-gray-400 text-sm">
+                                                    {user.user.email}
+                                                </div>
                                             </div>
                                         </div>
-                                        
+
                                         <Link
                                             to="/info/"
                                             onClick={() => setIsMenuOpen(false)}
                                             className="flex items-center space-x-4 w-full text-left p-4 rounded-lg transition-all duration-200 mb-0 text-gray-300 hover:text-white hover:bg-gray-800"
                                         >
                                             <Bed className="w-5 h-5" />
-                                            <span className="text-lg font-medium">Thông tin</span>
+                                            <span className="text-lg font-medium">
+                                                Thông tin
+                                            </span>
                                         </Link>
 
-                                        {user.user.role === 'ADMIN' && (
+                                        {user.user.role === "ADMIN" && (
                                             <Link
                                                 to="/admin"
-                                                onClick={() => setIsMenuOpen(false)}
+                                                onClick={() =>
+                                                    setIsMenuOpen(false)
+                                                }
                                                 className="flex items-center space-x-4 w-full text-left p-4 rounded-lg transition-all duration-200 mb-0 text-gray-300 hover:text-white hover:bg-gray-800"
                                             >
                                                 <Shield className="w-5 h-5" />
-                                                <span className="text-lg font-medium">Trang quản trị</span>
+                                                <span className="text-lg font-medium">
+                                                    Trang quản trị
+                                                </span>
                                             </Link>
                                         )}
                                     </div>
                                 </>
                             )}
                         </nav>
-                        
+
                         <div className="px-4 pt-4 border-t border-gray-700">
                             {isAuthenticated ? (
                                 <button
@@ -419,12 +420,20 @@ export default function Header() {
                                 </button>
                             ) : (
                                 <Link
-                                    to={menuItems.find((i) => i.id === mobileSelectedItem)?.href || "/"}
+                                    to={
+                                        menuItems.find(
+                                            (i) => i.id === mobileSelectedItem
+                                        )?.href || "/"
+                                    }
                                     onClick={() => setIsMenuOpen(false)}
                                     className="block w-full text-center bg-gradient-to-r from-sky-300 to-blue-300 text-white py-3 rounded-lg font-medium transform hover:scale-101 transition-all duration-200"
                                 >
                                     Đi đến{" "}
-                                    {menuItems.find((i) => i.id === mobileSelectedItem)?.label}
+                                    {
+                                        menuItems.find(
+                                            (i) => i.id === mobileSelectedItem
+                                        )?.label
+                                    }
                                 </Link>
                             )}
                         </div>
@@ -436,7 +445,9 @@ export default function Header() {
                                 {locationsLoading ? (
                                     <div className="flex items-center justify-center h-32">
                                         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-                                        <span className="ml-2 text-gray-600">Đang tải vị trí...</span>
+                                        <span className="ml-2 text-gray-600">
+                                            Đang tải vị trí...
+                                        </span>
                                     </div>
                                 ) : locations.length > 0 ? (
                                     <div className="grid grid-cols-2 gap-4">
@@ -445,13 +456,27 @@ export default function Header() {
                                                 key={location.id}
                                                 className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transform hover:scale-105 transition-all duration-300 cursor-pointer group"
                                                 onClick={() => {
-                                                    navigate(`/rooms?location=${location.id}&locationName=${encodeURIComponent(location.tenViTri)}&city=${encodeURIComponent(location.tinhThanh)}`);
+                                                    navigate(
+                                                        `/rooms?location=${
+                                                            location.id
+                                                        }&locationName=${encodeURIComponent(
+                                                            location.tenViTri
+                                                        )}&city=${encodeURIComponent(
+                                                            location.tinhThanh
+                                                        )}`
+                                                    );
                                                     setIsMenuOpen(false);
                                                 }}
                                             >
                                                 <div
                                                     className="h-32 relative"
-                                                    style={{background: location.hinhAnh && location.hinhAnh.trim() !== '' ? `linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.2)), url(${location.hinhAnh}) center/cover no-repeat` : ''
+                                                    style={{
+                                                        background:
+                                                            location.hinhAnh &&
+                                                            location.hinhAnh.trim() !==
+                                                                ""
+                                                                ? `linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.2)), url(${location.hinhAnh}) center/cover no-repeat`
+                                                                : "",
                                                     }}
                                                 >
                                                     <div className="absolute inset-0 bg-black/40 bg-opacity-10 group-hover:bg-opacity-5 transition-all duration-300"></div>
@@ -460,7 +485,8 @@ export default function Header() {
                                                             {location.tenViTri}
                                                         </h4>
                                                         <p className="text-white text-xs opacity-90 drop-shadow">
-                                                            {location.tinhThanh}, {location.quocGia}
+                                                            {location.tinhThanh}
+                                                            , {location.quocGia}
                                                         </p>
                                                     </div>
                                                 </div>
@@ -479,13 +505,17 @@ export default function Header() {
                                     </div>
                                 ) : (
                                     <div className="text-center py-8">
-                                        <p className="text-gray-600">Không có vị trí nào được tìm thấy</p>
+                                        <p className="text-gray-600">
+                                            Không có vị trí nào được tìm thấy
+                                        </p>
                                     </div>
                                 )}
                             </div>
                         ) : (
                             (() => {
-                                const currentContent = menuItems.find((i) => i.id === mobileSelectedItem)?.content;
+                                const currentContent = menuItems.find(
+                                    (i) => i.id === mobileSelectedItem
+                                )?.content;
                                 if (
                                     currentContent &&
                                     (currentContent.title ||
@@ -496,7 +526,13 @@ export default function Header() {
                                         <div className="max-w-md">
                                             <div className="mb-6">
                                                 <div className="w-16 h-16 bg-gradient-to-r from-sky-300 to-blue-300 rounded-full flex items-center justify-center mb-4">
-                                                    {menuItems.find((i) => i.id === mobileSelectedItem)?.icon}
+                                                    {
+                                                        menuItems.find(
+                                                            (i) =>
+                                                                i.id ===
+                                                                mobileSelectedItem
+                                                        )?.icon
+                                                    }
                                                 </div>
                                             </div>
                                             <h3 className="text-2xl font-bold text-gray-900 mb-4">
