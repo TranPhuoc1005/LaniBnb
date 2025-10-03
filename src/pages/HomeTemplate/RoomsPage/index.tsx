@@ -3,7 +3,7 @@ import { MapPin, Star, Heart, Eye, SlidersHorizontal, Grid, List, ChevronLeft, C
 import "./_rooms.scss";
 import "../_components/scss/styles.scss";
 import { Link, useSearchParams } from "react-router-dom";
-import { useListRoom, useLocationOfRoom } from "@/hooks/useRoomQuery";
+import { useListRoom } from "@/hooks/useRoomQuery";
 import { useListLocation } from "@/hooks/useLocationQuery";
 import type { RoomItem } from "@/interface/room.interface";
 
