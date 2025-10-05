@@ -247,7 +247,7 @@ export default function CommentsSection() {
                                 filteredReviews.map((review) => (
                                     <Card
                                         key={review.id}
-                                        className="bg-white/70 backdrop-blur-sm shadow-lg border-white/20 hover:shadow-xl transition-all duration-300"
+                                        className="p-0 bg-white/70 backdrop-blur-sm shadow-lg border-white/20 hover:shadow-xl transition-all duration-300"
                                     >
                                         <CardContent className="p-4 md:p-6">
                                             <div className="flex items-start space-x-4">

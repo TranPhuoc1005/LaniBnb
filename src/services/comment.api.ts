@@ -16,7 +16,7 @@ export const submitCommitApi = async (comment: Omit<CommentItem, "id" | "tenNguo
         noiDung: comment.noiDung,
         saoBinhLuan: comment.saoBinhLuan
     };
-    
+            
     try {
         const res = await api.post("binh-luan", commentData);
         return res.data.content;

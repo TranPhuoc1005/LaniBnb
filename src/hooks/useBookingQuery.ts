@@ -1,4 +1,4 @@
-import type { BookingItem } from "@/interface/booking.interface"
+import type { BookingItem, CreateBookingRequest } from "@/interface/booking.interface"
 import { addBookingApi, detailBookingApi, detailUserBookingApi, listBookingApi, removeBookingApi, updateBookingApi } from "@/services/booking.api"
 import { useBookingManagementStore } from "@/store/bookingManagement.store"
 import { showDialog } from "@/utils/dialog"

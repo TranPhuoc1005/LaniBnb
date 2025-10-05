@@ -87,7 +87,7 @@ const events = [
         description: "Ưu đãi đến 40% cho kỳ nghỉ Giáng Sinh và Tết Dương lịch",
         image: "../images/about_image4.png",
         discount: "40%",
-        code: "XMAS2024",
+        code: "XMAS2025",
     },
     {
         date: "20-25 JAN",
@@ -95,7 +95,7 @@ const events = [
         description: "Gói nghỉ dưỡng Tết đặc biệt với nhiều hoạt động văn hóa",
         image: "../images/about_image5.png",
         discount: "35%",
-        code: "TET2025",
+        code: "TET2026",
     },
     {
         date: "14 FEB",
@@ -103,7 +103,7 @@ const events = [
         description: "Gói lãng mạn cho các cặp đôi với dinner và spa couple",
         image: "../images/about_image6.png",
         discount: "25%",
-        code: "LOVE2025",
+        code: "LOVE2026",
     },
 ];
 

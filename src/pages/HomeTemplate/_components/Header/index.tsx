@@ -169,7 +169,7 @@ export default function Header() {
         <>
             <header className="glass-effect bg-white/90 shadow-md fixed left-0 right-0 top-0 z-101">
                 <div className="max-w-6xl mx-auto flex justify-between items-center py-2 px-5">
-                    <h1 className="text-3xl lg:text-4xl font-bold">LaniBnb</h1>
+                    <h1 className="flex items-center justify-center gap-2.5 text-3xl lg:text-4xl font-bold"><img src="../images/logo.png" width={45} height={45} alt="LaniBnb" />LaniBnb</h1>
 
                     <nav
                         ref={navRef}
@@ -253,7 +253,7 @@ export default function Header() {
 
                                         {user.user.role === "ADMIN" && (
                                             <Link
-                                                to="/admin"
+                                                to="/dashboard"
                                                 onClick={() =>
                                                     setIsUserDropdownOpen(false)
                                                 }
@@ -310,7 +310,7 @@ export default function Header() {
 
             <div
                 className={`h_menu ${
-                    isMenuOpen ? "active" : ""
+                    isMenuOpen ? "active pointer-events-all" : "pointer-events-none"
                 } fixed inset-0 z-[100] bg-white top-[70px] lg:top-[80px]`}
             >
                 <div className="flex md:flex-row flex-col h-full">
@@ -389,7 +389,7 @@ export default function Header() {
 
                                         {user.user.role === "ADMIN" && (
                                             <Link
-                                                to="/admin"
+                                                to="/dashboard"
                                                 onClick={() =>
                                                     setIsMenuOpen(false)
                                                 }

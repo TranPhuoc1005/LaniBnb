@@ -7,34 +7,45 @@ import { useDetailLocation } from "@/hooks/useLocationQuery";
 import { useCreateBooking } from "@/hooks/useBookingQuery";
 import type { BookingItem } from "@/interface/booking.interface";
 import RoomDetailComments from "./RoomDetailComments";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function RoomDetailPage() {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
-    
+
     const { user } = useAuthStore();
     const isAuthenticated = !!user;
-    
+
     const roomId = id ? parseInt(id) : 0;
-    
-    const { data: roomDetail, isLoading: roomLoading, error: roomError } = useDetailRoom(roomId);
-    
+
+    const {
+        data: roomDetail,
+        isLoading: roomLoading,
+        error: roomError,
+    } = useDetailRoom(roomId);
+
     const { data: locationDetail } = useDetailLocation(
         roomDetail?.maViTri || 0,
         { enabled: !!roomDetail?.maViTri }
     );
-    
-    const createBookingMutation = useCreateBooking({
-        onSuccess: () => {
-            setShowBookingModal(true);
-            setSelectedDate({ checkIn: "", checkOut: "" });
-            setGuests(2);
-        },
-        onError: (error: any) => {
-            console.error("Booking error:", error);
-        }
-    });
-    
+
+    const queryClient = useQueryClient();
+
+const createBookingMutation = useCreateBooking({
+    onSuccess: () => {
+        setShowBookingModal(true);
+        setSelectedDate({ checkIn: "", checkOut: "" });
+        setGuests(2);
+        
+        queryClient.invalidateQueries({
+            queryKey: ["detail-user-booking", String(user?.user.id)],
+        });
+    },
+    onError: (error: any) => {
+        console.error("Booking error:", error);
+    },
+});
+
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const [selectedDate, setSelectedDate] = useState({
         checkIn: "",
@@ -48,15 +59,17 @@ export default function RoomDetailPage() {
     const [showBookingModal, setShowBookingModal] = useState(false);
 
     useEffect(() => {
-        if (window.location.hash === '#reviews') {
+        if (window.location.hash === "#reviews") {
             setTimeout(() => {
-                const reviewsElement = document.getElementById('reviews');
+                const reviewsElement = document.getElementById("reviews");
                 if (reviewsElement) {
-                    const elementPosition = reviewsElement.getBoundingClientRect().top;
-                    const offsetPosition = elementPosition + window.pageYOffset - 80;
+                    const elementPosition =
+                        reviewsElement.getBoundingClientRect().top;
+                    const offsetPosition =
+                        elementPosition + window.pageYOffset - 80;
                     window.scrollTo({
                         top: offsetPosition,
-                        behavior: 'smooth'
+                        behavior: "smooth",
                     });
                 }
             }, 100);
@@ -64,7 +77,8 @@ export default function RoomDetailPage() {
     }, [roomDetail]);
 
     const calculateTotal = () => {
-        if (!selectedDate.checkIn || !selectedDate.checkOut || !roomDetail) return 0;
+        if (!selectedDate.checkIn || !selectedDate.checkOut || !roomDetail)
+            return 0;
         const checkIn = new Date(selectedDate.checkIn);
         const checkOut = new Date(selectedDate.checkOut);
         const days = Math.ceil(
@@ -73,7 +87,9 @@ export default function RoomDetailPage() {
         return days > 0 ? days * roomDetail.giaTien : 0;
     };
 
-    const totalDays = roomDetail ? Math.max(1, calculateTotal() / roomDetail.giaTien) : 0;
+    const totalDays = roomDetail
+        ? Math.max(1, calculateTotal() / roomDetail.giaTien)
+        : 0;
 
     const handleBooking = async () => {
         if (!isAuthenticated || !user) {
@@ -93,7 +109,7 @@ export default function RoomDetailPage() {
 
         const checkIn = new Date(selectedDate.checkIn);
         const checkOut = new Date(selectedDate.checkOut);
-        
+
         if (checkOut <= checkIn) {
             alert("Ngày trả phòng phải sau ngày nhận phòng");
             return;
@@ -105,7 +121,7 @@ export default function RoomDetailPage() {
             ngayDen: selectedDate.checkIn,
             ngayDi: selectedDate.checkOut,
             soLuongKhach: guests,
-            maNguoiDung: user.user.id
+            maNguoiDung: user.user.id,
         };
 
         createBookingMutation.mutate(bookingData);
@@ -113,7 +129,7 @@ export default function RoomDetailPage() {
 
     const getAmenities = () => {
         if (!roomDetail) return [];
-        
+
         const amenities = [];
         if (roomDetail.mayGiat) amenities.push("Máy giặt");
         if (roomDetail.banLa) amenities.push("Bàn là");
@@ -124,27 +140,29 @@ export default function RoomDetailPage() {
         if (roomDetail.doXe) amenities.push("Đỗ xe");
         if (roomDetail.hoBoi) amenities.push("Hồ bơi");
         if (roomDetail.banUi) amenities.push("Bàn ủi");
-        
+
         return amenities;
     };
 
     const getRoomImages = () => {
         if (!roomDetail?.hinhAnh) return [];
-        return Array.isArray(roomDetail.hinhAnh) 
-            ? roomDetail.hinhAnh 
+        return Array.isArray(roomDetail.hinhAnh)
+            ? roomDetail.hinhAnh
             : [roomDetail.hinhAnh];
     };
 
     const images = getRoomImages();
     const amenities = getAmenities();
-    const today = new Date().toISOString().split('T')[0];
+    const today = new Date().toISOString().split("T")[0];
 
     if (roomLoading) {
         return (
             <div className="min-h-screen bg-gray-50 flex items-center justify-center">
                 <div className="text-center">
                     <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-500 border-t-transparent mx-auto mb-4"></div>
-                    <p className="text-lg font-semibold text-gray-600">Đang tải thông tin phòng...</p>
+                    <p className="text-lg font-semibold text-gray-600">
+                        Đang tải thông tin phòng...
+                    </p>
                 </div>
             </div>
         );
@@ -156,7 +174,9 @@ export default function RoomDetailPage() {
                 <div className="text-center">
                     <div className="text-red-600 mb-4">
                         <X className="w-12 h-12 mx-auto mb-2" />
-                        <p className="text-lg font-semibold">Không tìm thấy thông tin phòng</p>
+                        <p className="text-lg font-semibold">
+                            Không tìm thấy thông tin phòng
+                        </p>
                     </div>
                     <button
                         onClick={() => navigate("/rooms")}
@@ -170,8 +190,8 @@ export default function RoomDetailPage() {
     }
 
     return (
-        <div className="min-h-screen bg-gray-50">
-            <div className="relative h-[50vh] sm:h-[60vh] lg:h-[70vh] bg-black">
+        <div className=" bg-gray-50">
+            <div className="relative h-[50vh] sm:h-[60vh] lg:h-[70vh] bg-black pointer-events-none">
                 <div className="relative h-full overflow-hidden">
                     <img
                         src={images[currentImageIndex] || roomDetail.hinhAnh}
@@ -179,7 +199,8 @@ export default function RoomDetailPage() {
                         className="w-full h-full object-contain"
                         onError={(e) => {
                             const target = e.target as HTMLImageElement;
-                            target.src = "https://airbnbnew.cybersoft.edu.vn/images/phong1.jpg";
+                            target.src =
+                                "https://airbnbnew.cybersoft.edu.vn/images/phong1.jpg";
                         }}
                     />
 
@@ -188,7 +209,9 @@ export default function RoomDetailPage() {
                             <button
                                 onClick={() =>
                                     setCurrentImageIndex((prev) =>
-                                        prev === 0 ? images.length - 1 : prev - 1
+                                        prev === 0
+                                            ? images.length - 1
+                                            : prev - 1
                                     )
                                 }
                                 className="absolute left-2 sm:left-4 top-1/2 transform -translate-y-1/2 bg-black/50 text-white p-2 rounded-full hover:bg-black/70 transition-colors"
@@ -199,7 +222,9 @@ export default function RoomDetailPage() {
                             <button
                                 onClick={() =>
                                     setCurrentImageIndex((prev) =>
-                                        prev === images.length - 1 ? 0 : prev + 1
+                                        prev === images.length - 1
+                                            ? 0
+                                            : prev + 1
                                     )
                                 }
                                 className="absolute right-2 sm:right-4 top-1/2 transform -translate-y-1/2 bg-black/50 text-white p-2 rounded-full hover:bg-black/70 transition-colors"
@@ -211,7 +236,9 @@ export default function RoomDetailPage() {
                                 {images.map((_, index) => (
                                     <button
                                         key={index}
-                                        onClick={() => setCurrentImageIndex(index)}
+                                        onClick={() =>
+                                            setCurrentImageIndex(index)
+                                        }
                                         className={`w-2 h-2 rounded-full transition-colors ${
                                             currentImageIndex === index
                                                 ? "bg-white"
@@ -236,7 +263,7 @@ export default function RoomDetailPage() {
                     )}
 
                     <div className="absolute top-4 left-4 right-4 flex justify-between items-center">
-                        <button 
+                        <button
                             onClick={() => navigate(-1)}
                             className="bg-black/50 text-white p-2 rounded-full hover:bg-black/70 transition-colors"
                         >
@@ -272,7 +299,9 @@ export default function RoomDetailPage() {
                                 <div className="flex items-center space-x-2">
                                     <MapPin className="w-4 h-4 text-gray-500" />
                                     <span className="text-gray-600">
-                                        {locationDetail?.tenViTri} • {locationDetail?.tinhThanh || locationDetail?.quocGia}
+                                        {locationDetail?.tenViTri} •{" "}
+                                        {locationDetail?.tinhThanh ||
+                                            locationDetail?.quocGia}
                                     </span>
                                 </div>
                             </div>
@@ -284,7 +313,10 @@ export default function RoomDetailPage() {
                             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                                 <div className="flex items-center space-x-4">
                                     <div className="text-sm text-gray-600">
-                                        {roomDetail.khach} khách • {roomDetail.phongNgu} phòng ngủ • {roomDetail.giuong} giường • {roomDetail.phongTam} phòng tắm
+                                        {roomDetail.khach} khách •{" "}
+                                        {roomDetail.phongNgu} phòng ngủ •{" "}
+                                        {roomDetail.giuong} giường •{" "}
+                                        {roomDetail.phongTam} phòng tắm
                                     </div>
                                 </div>
 
@@ -329,7 +361,8 @@ export default function RoomDetailPage() {
                                                 Mô tả
                                             </h3>
                                             <p className="text-gray-700 leading-relaxed">
-                                                {roomDetail.moTa || "Phòng với đầy đủ tiện nghi, thoải mái và ấm cúng."}
+                                                {roomDetail.moTa ||
+                                                    "Phòng với đầy đủ tiện nghi, thoải mái và ấm cúng."}
                                             </p>
                                         </div>
 
@@ -338,17 +371,19 @@ export default function RoomDetailPage() {
                                                 Điểm nổi bật
                                             </h3>
                                             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                                                {amenities.slice(0, 6).map((amenity, index) => (
-                                                    <div
-                                                        key={index}
-                                                        className="flex items-center space-x-2 text-gray-700"
-                                                    >
-                                                        <Check className="w-4 h-4 text-green-500" />
-                                                        <span className="text-sm">
-                                                            {amenity}
-                                                        </span>
-                                                    </div>
-                                                ))}
+                                                {amenities
+                                                    .slice(0, 6)
+                                                    .map((amenity, index) => (
+                                                        <div
+                                                            key={index}
+                                                            className="flex items-center space-x-2 text-gray-700"
+                                                        >
+                                                            <Check className="w-4 h-4 text-green-500" />
+                                                            <span className="text-sm">
+                                                                {amenity}
+                                                            </span>
+                                                        </div>
+                                                    ))}
                                             </div>
                                         </div>
 
@@ -358,20 +393,39 @@ export default function RoomDetailPage() {
                                             </h3>
                                             <div className="grid grid-cols-2 gap-4">
                                                 <div className="text-sm">
-                                                    <span className="text-gray-600">Số khách:</span>
-                                                    <span className="ml-2 font-medium">{roomDetail.khach} người</span>
+                                                    <span className="text-gray-600">
+                                                        Số khách:
+                                                    </span>
+                                                    <span className="ml-2 font-medium">
+                                                        {roomDetail.khach} người
+                                                    </span>
                                                 </div>
                                                 <div className="text-sm">
-                                                    <span className="text-gray-600">Phòng ngủ:</span>
-                                                    <span className="ml-2 font-medium">{roomDetail.phongNgu} phòng</span>
+                                                    <span className="text-gray-600">
+                                                        Phòng ngủ:
+                                                    </span>
+                                                    <span className="ml-2 font-medium">
+                                                        {roomDetail.phongNgu}{" "}
+                                                        phòng
+                                                    </span>
                                                 </div>
                                                 <div className="text-sm">
-                                                    <span className="text-gray-600">Giường:</span>
-                                                    <span className="ml-2 font-medium">{roomDetail.giuong} giường</span>
+                                                    <span className="text-gray-600">
+                                                        Giường:
+                                                    </span>
+                                                    <span className="ml-2 font-medium">
+                                                        {roomDetail.giuong}{" "}
+                                                        giường
+                                                    </span>
                                                 </div>
                                                 <div className="text-sm">
-                                                    <span className="text-gray-600">Phòng tắm:</span>
-                                                    <span className="ml-2 font-medium">{roomDetail.phongTam} phòng</span>
+                                                    <span className="text-gray-600">
+                                                        Phòng tắm:
+                                                    </span>
+                                                    <span className="ml-2 font-medium">
+                                                        {roomDetail.phongTam}{" "}
+                                                        phòng
+                                                    </span>
                                                 </div>
                                             </div>
                                         </div>
@@ -385,28 +439,54 @@ export default function RoomDetailPage() {
                                                 Tiện nghi có sẵn
                                             </h3>
                                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                                {amenities.length > 0 ? amenities
-                                                    .slice(0, showAllAmenities ? amenities.length : 6)
-                                                    .map((amenity, index) => (
-                                                        <div
-                                                            key={index}
-                                                            className="flex items-center space-x-3 text-gray-700"
-                                                        >
-                                                            <Check className="w-4 h-4 text-green-500 flex-shrink-0" />
-                                                            <span>{amenity}</span>
-                                                        </div>
-                                                    )) : (
-                                                        <p className="text-gray-600">Thông tin tiện nghi sẽ được cập nhật sớm.</p>
-                                                    )}
+                                                {amenities.length > 0 ? (
+                                                    amenities
+                                                        .slice(
+                                                            0,
+                                                            showAllAmenities
+                                                                ? amenities.length
+                                                                : 6
+                                                        )
+                                                        .map(
+                                                            (
+                                                                amenity,
+                                                                index
+                                                            ) => (
+                                                                <div
+                                                                    key={index}
+                                                                    className="flex items-center space-x-3 text-gray-700"
+                                                                >
+                                                                    <Check className="w-4 h-4 text-green-500 flex-shrink-0" />
+                                                                    <span>
+                                                                        {
+                                                                            amenity
+                                                                        }
+                                                                    </span>
+                                                                </div>
+                                                            )
+                                                        )
+                                                ) : (
+                                                    <p className="text-gray-600">
+                                                        Thông tin tiện nghi sẽ
+                                                        được cập nhật sớm.
+                                                    </p>
+                                                )}
                                             </div>
-                                            {!showAllAmenities && amenities.length > 6 && (
-                                                <button
-                                                    onClick={() => setShowAllAmenities(true)}
-                                                    className="mt-3 text-blue-600 hover:text-blue-700 font-medium"
-                                                >
-                                                    Xem thêm {amenities.length - 6} tiện nghi
-                                                </button>
-                                            )}
+                                            {!showAllAmenities &&
+                                                amenities.length > 6 && (
+                                                    <button
+                                                        onClick={() =>
+                                                            setShowAllAmenities(
+                                                                true
+                                                            )
+                                                        }
+                                                        className="mt-3 text-blue-600 hover:text-blue-700 font-medium"
+                                                    >
+                                                        Xem thêm{" "}
+                                                        {amenities.length - 6}{" "}
+                                                        tiện nghi
+                                                    </button>
+                                                )}
                                         </div>
                                     </div>
                                 )}
@@ -418,7 +498,9 @@ export default function RoomDetailPage() {
                                                 Vị trí
                                             </h3>
                                             <p className="text-gray-700">
-                                                {locationDetail?.tenViTri}, {locationDetail?.tinhThanh}, {locationDetail?.quocGia}
+                                                {locationDetail?.tenViTri},{" "}
+                                                {locationDetail?.tinhThanh},{" "}
+                                                {locationDetail?.quocGia}
                                             </p>
                                         </div>
 
@@ -448,7 +530,9 @@ export default function RoomDetailPage() {
                             {createBookingMutation.isError && (
                                 <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
                                     <p className="text-red-600 text-sm">
-                                        {(createBookingMutation.error as any)?.response?.data?.content || "Đặt phòng thất bại"}
+                                        {(createBookingMutation.error as any)
+                                            ?.response?.data?.content ||
+                                            "Đặt phòng thất bại"}
                                     </p>
                                 </div>
                             )}
@@ -497,10 +581,15 @@ export default function RoomDetailPage() {
                                     </label>
                                     <select
                                         value={guests}
-                                        onChange={(e) => setGuests(parseInt(e.target.value))}
+                                        onChange={(e) =>
+                                            setGuests(parseInt(e.target.value))
+                                        }
                                         className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                     >
-                                        {Array.from({length: roomDetail.khach}, (_, i) => i + 1).map((num) => (
+                                        {Array.from(
+                                            { length: roomDetail.khach },
+                                            (_, i) => i + 1
+                                        ).map((num) => (
                                             <option key={num} value={num}>
                                                 {num} khách
                                             </option>
@@ -514,22 +603,30 @@ export default function RoomDetailPage() {
                                     <div className="space-y-2 text-sm">
                                         <div className="flex justify-between">
                                             <span>
-                                                {roomDetail.giaTien.toLocaleString()}đ x {totalDays} đêm
+                                                {roomDetail.giaTien.toLocaleString()}
+                                                đ x {totalDays} đêm
                                             </span>
                                             <span>
-                                                {calculateTotal().toLocaleString()}đ
+                                                {calculateTotal().toLocaleString()}
+                                                đ
                                             </span>
                                         </div>
                                         <div className="flex justify-between">
                                             <span>Phí dịch vụ</span>
                                             <span>
-                                                {(calculateTotal() * 0.1).toLocaleString()}đ
+                                                {(
+                                                    calculateTotal() * 0.1
+                                                ).toLocaleString()}
+                                                đ
                                             </span>
                                         </div>
                                         <div className="border-t pt-2 flex justify-between font-bold text-lg">
                                             <span>Tổng cộng</span>
                                             <span className="text-blue-600">
-                                                {(calculateTotal() * 1.1).toLocaleString()}đ
+                                                {(
+                                                    calculateTotal() * 1.1
+                                                ).toLocaleString()}
+                                                đ
                                             </span>
                                         </div>
                                     </div>
@@ -590,15 +687,16 @@ export default function RoomDetailPage() {
                         <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
                             <CheckCircle className="w-8 h-8 text-green-500" />
                         </div>
-                        
+
                         <h3 className="text-xl font-bold text-gray-900 mb-2">
                             Đặt phòng thành công!
                         </h3>
-                        
+
                         <p className="text-gray-600 mb-6">
-                            Cảm ơn bạn đã đặt phòng. Bạn có thể xem chi tiết đặt phòng trong trang quản lý của mình.
+                            Cảm ơn bạn đã đặt phòng. Bạn có thể xem chi tiết đặt
+                            phòng trong trang quản lý của mình.
                         </p>
-                        
+
                         <div className="space-y-3">
                             <button
                                 onClick={() => navigate("/bookings")}
@@ -606,7 +704,7 @@ export default function RoomDetailPage() {
                             >
                                 Xem đặt phòng của tôi
                             </button>
-                            
+
                             <button
                                 onClick={() => setShowBookingModal(false)}
                                 className="w-full border border-gray-300 text-gray-700 py-3 rounded-lg font-medium hover:bg-gray-50 transition-colors"
@@ -638,7 +736,9 @@ export default function RoomDetailPage() {
                             <button
                                 onClick={() =>
                                     setCurrentImageIndex((prev) =>
-                                        prev === 0 ? images.length - 1 : prev - 1
+                                        prev === 0
+                                            ? images.length - 1
+                                            : prev - 1
                                     )
                                 }
                                 className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white hover:text-gray-300"
@@ -649,7 +749,9 @@ export default function RoomDetailPage() {
                             <button
                                 onClick={() =>
                                     setCurrentImageIndex((prev) =>
-                                        prev === images.length - 1 ? 0 : prev + 1
+                                        prev === images.length - 1
+                                            ? 0
+                                            : prev + 1
                                     )
                                 }
                                 className="absolute right-4 top-1/2 transform -translate-y-1/2 text-white hover:text-gray-300"
@@ -696,8 +798,8 @@ export default function RoomDetailPage() {
                     <button
                         onClick={handleBooking}
                         disabled={
-                            !selectedDate.checkIn || 
-                            !selectedDate.checkOut || 
+                            !selectedDate.checkIn ||
+                            !selectedDate.checkOut ||
                             createBookingMutation.isPending
                         }
                         className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-6 py-3 rounded-lg font-semibold hover:from-blue-700 hover:to-blue-800 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"

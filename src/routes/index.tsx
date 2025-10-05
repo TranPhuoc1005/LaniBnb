@@ -6,13 +6,13 @@ const Loading = lazy(() => import('@/components/layouts/Loading'));
 const HomeLayout = lazy(() => import('@/layouts/HomeLayout'));
 const HomePage = lazy(() => import('@/pages/HomeTemplate/HomePage'));
 const AboutPage = lazy(() => import('@/pages/HomeTemplate/AboutPage'));
+const UserProfilePage = lazy(() => import('@/pages/HomeTemplate/UserProfilePage'));
 const RoomsPage = lazy(() => import('@/pages/HomeTemplate/RoomsPage'));
 const RoomDetailPage = lazy(() => import("@/pages/HomeTemplate/RoomDetailPage"));
 const ContactPage = lazy(() => import('@/pages/HomeTemplate/ContactPage'));
 // Auth
 const AuthLayout = lazy(() => import('@/layouts/AuthLayout'));
 const LoginPage = lazy(() => import('@/pages/AuthTemplate/LoginPage'));
-const RegisterPage = lazy(() => import('@/pages/AuthTemplate/RegisterPage'));
 // Admin
 const AdminLayout = lazy(() => import('@/layouts/AdminLayout'));
 const Dashboard = lazy(() => import('@/pages/AdminTemplate/Dashboard'));
@@ -21,6 +21,7 @@ const BookingManagement = lazy(() => import('@/pages/AdminTemplate/BookingManage
 const CommentManagement = lazy(() => import('@/pages/AdminTemplate/CommentManagement'));
 const LocationManagement = lazy(() => import('@/pages/AdminTemplate/LocationManagement'));
 const RoomManagement = lazy(() => import('@/pages/AdminTemplate/RoomManagement'));
+const ChatManagement = lazy(() => import('@/pages/AdminTemplate/ChatManagement'));
 
 const withSuspense = (Component: LazyExoticComponent<FC>) => (
     <Suspense fallback={<Loading />}>
@@ -35,6 +36,7 @@ export const routes: RouteObject[] = [
         children: [
             { path: '', element: withSuspense(HomePage) },
             { path: 'about', element: withSuspense(AboutPage) },
+            { path: 'info', element: withSuspense(UserProfilePage)},
             { path: 'rooms', element: withSuspense(RoomsPage) },
             { path: 'room-detail/:id', element: withSuspense(RoomDetailPage) },
             { path: 'contact', element: withSuspense(ContactPage) }
@@ -45,7 +47,6 @@ export const routes: RouteObject[] = [
         element: withSuspense(AuthLayout),
         children: [
             { path: 'login', element: withSuspense(LoginPage) },
-            { path: 'register', element: withSuspense(RegisterPage), }
         ]
     },
     {
@@ -57,7 +58,8 @@ export const routes: RouteObject[] = [
             { path: 'location-management', element: withSuspense(LocationManagement) },
             { path: 'room-management', element: withSuspense(RoomManagement) },
             { path: 'comment/:roomID', element: withSuspense(CommentManagement) },
-            { path: 'booking/:userID', element: withSuspense(BookingManagement) }
+            { path: 'booking/:userID', element: withSuspense(BookingManagement) },
+            { path: 'chat-management', element: withSuspense(ChatManagement) }
         ]
     },
     {

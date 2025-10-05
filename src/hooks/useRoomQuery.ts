@@ -1,8 +1,9 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { useMutation, useQueries, useQuery, useQueryClient } from "@tanstack/react-query"
 import { addRoomApi, addRoomImageApi, detailRoomApi, listRoomApi, locationOfRoomApi, removeRoomApi, updateRoomApi } from "@/services/room.api"
 import { showDialog } from "@/utils/dialog"
 import { roomManagementStore } from "@/store/roomManagement.store"
 import type { RoomItem } from "@/interface/room.interface"
+import { useMemo } from "react"
 
 export const useListRoom = (pageIndex: number, pageSize: number, keyword?: string, optional?: {}) => {
     return useQuery({
@@ -29,6 +30,33 @@ export const useLocationOfRoom = (id: number, optional?: {}) => {
         enabled: !!id,
         ...optional
     })
+}
+
+export const useBookingsWithRoomDetails = (bookings: any[] = []) => {
+    const roomQueries = useQueries({
+        queries: bookings.map((booking) => ({
+            queryKey: ['detail-room', booking.maPhong],
+            queryFn: () => detailRoomApi(booking.maPhong),
+            enabled: !!booking.maPhong,
+            staleTime: 5 * 60 * 1000, // Cache 5 phút
+        }))
+    });
+
+    const bookingsWithRooms = useMemo(() => {
+        return bookings.map((booking, index) => ({
+            ...booking,
+            room: roomQueries[index]?.data || null
+        }));
+    }, [bookings, roomQueries]);
+
+    const isLoading = roomQueries.some(query => query.isLoading);
+    const hasError = roomQueries.some(query => query.isError);
+
+    return {
+        data: bookingsWithRooms,
+        isLoading,
+        hasError
+    };
 }
 
 export const useAddRoom = (optional?: {}) => {

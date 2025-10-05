@@ -1,4 +1,4 @@
-import { House, MapPinned, Store, User } from 'lucide-react';
+import { BotMessageSquare, House, MapPinned, Store, User } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 
@@ -8,6 +8,7 @@ const MENU_DASHBOARD = [
     { id: 1, icon: <User />, text: 'Quản lí người dùng', link: 'auth-management' },
     { id: 2, icon: <MapPinned />, text: 'Quản lí vị trí', link: 'location-management' },
     { id: 3, icon: <Store />, text: 'Quản lí tin phòng', link: 'room-management' },
+    { id: 4, icon: <BotMessageSquare />, text: 'Hỗ trợ trức tuyến', link: 'chat-management' },
     // { id: 4, icon: <HousePlus />, text: 'Quản lí đặt phòng', link: 'booking' },
     // { id: 5, icon: <MessageSquareText />, text: 'Quản lí bình luận', link: 'comment-management' }
 ]

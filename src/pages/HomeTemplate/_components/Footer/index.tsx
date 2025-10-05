@@ -1,18 +1,18 @@
 import { MapPin, Phone, Mail, Facebook, Instagram, Twitter, Youtube, Star, Shield, Clock, Award } from "lucide-react";
 import { useListLocation } from "@/hooks/useLocationQuery";
+import { Link } from "react-router-dom";
 
 export default function Footer() {
-    const { data } = useListLocation(1, 1000);
+    const { data, isLoading } = useListLocation(1, 5);
     const locations = data?.data || [];
 
     const quickLinks = [
         { name: "Trang chủ", href: "/" },
         { name: "Giới thiệu", href: "/about" },
-        { name: "Phòng nghỉ", href: "/rooms" },
-        { name: "Thông tin cá nhân", href: "/info" },
+        { name: "Phòng", href: "/rooms" },
+        { name: "Liên hệ", href: "/contact" },
+        { name: "Thông tin cá nhân", href: "/info" }
     ];
-
-    const popularDestinations = locations.slice(0, 6);
 
     const achievements = [
         { icon: <Star className="w-5 h-5" />, text: "4.8/5 Đánh giá", subtext: "Từ 2,456 khách hàng" },
@@ -22,7 +22,7 @@ export default function Footer() {
     ];
 
     return (
-        <footer className="bg-gradient-to-r from-sky-300 to-blue-300 text-white relative overflow-hidden">
+        <footer className="bg-gradient-to-r from-sky-300 to-blue-300 text-white relative overflow-hidden mb-[72px] md:mb-0">
             <div className="relative z-10">
                 <div className="border-b border-white/10 py-8">
                     <div className="max-w-6xl mx-auto px-4">
@@ -47,8 +47,8 @@ export default function Footer() {
                         <div className="lg:col-span-1">
                             <div className="flex items-center space-x-2 mb-6">
                                 <div className="rounded-lg">
-                                    <div className="w-8 h-8 bg-white rounded flex items-center justify-center">
-                                        <span className="text-blue-600 font-bold text-lg">L</span>
+                                    <div className="w-14 h-14 rounded flex items-center justify-center">
+                                        <img src="../images/logo.png" alt="" />
                                     </div>
                                 </div>
                                 <h2 className="text-2xl font-bold text-white">
@@ -72,37 +72,53 @@ export default function Footer() {
                         </div>
 
                         <div>
-                            <h3 className="text-lg font-semibold mb-6 text-white">Liên kết nhanh</h3>
-                            <ul className="space-y-3">
-                                {quickLinks.map((link, index) => (
-                                    <li key={index}>
-                                        <a 
-                                            href={link.href} 
-                                            className="text-white hover:text-blue-400 transition-colors duration-200 flex items-center group"
-                                        >
-                                            <span className="w-0 group-hover:w-2 h-0.5 bg-blue-400 transition-all duration-200 mr-0 group-hover:mr-2"></span>
-                                            {link.name}
-                                        </a>
-                                    </li>
-                                ))}
-                            </ul>
+                            <h3 className="text-lg font-semibold mb-6 text-white">Địa điểm nổi bật</h3>
+                            {isLoading ? (
+                                <div className="space-y-3">
+                                    <div className="h-4 bg-white/20 rounded animate-pulse"></div>
+                                    <div className="h-4 bg-white/20 rounded animate-pulse"></div>
+                                    <div className="h-4 bg-white/20 rounded animate-pulse"></div>
+                                </div>
+                            ) : (
+                                <ul className="space-y-3">
+                                    {quickLinks.map((location, index) => (
+                                        <li key={index}>
+                                            <Link 
+                                                to={location.href}
+                                                className="text-white hover:text-blue-400 transition-colors duration-200 flex items-center group"
+                                            >
+                                                <MapPin className="w-3 h-3 mr-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+                                                {location.name}
+                                            </Link>
+                                        </li>
+                                    ))}
+                                </ul>
+                            )}
                         </div>
 
                         <div>
                             <h3 className="text-lg font-semibold mb-6 text-white">Điểm đến phổ biến</h3>
-                            <ul className="space-y-3">
-                                {popularDestinations.map((location) => (
-                                    <li key={location.id}>
-                                        <a 
-                                            href="#" 
-                                            className="text-white hover:text-purple-400 transition-colors duration-200 flex items-center group"
-                                        >
-                                            <MapPin className="w-3 h-3 mr-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
-                                            {location.tinhThanh}
-                                        </a>
-                                    </li>
-                                ))}
-                            </ul>
+                            {isLoading ? (
+                                <div className="space-y-3">
+                                    <div className="h-4 bg-white/20 rounded animate-pulse"></div>
+                                    <div className="h-4 bg-white/20 rounded animate-pulse"></div>
+                                    <div className="h-4 bg-white/20 rounded animate-pulse"></div>
+                                </div>
+                            ) : (
+                                <ul className="space-y-3">
+                                    {locations.map((location) => (
+                                        <li key={location.id}>
+                                            <Link 
+                                                to={`/rooms?location=${location.id}`}
+                                                className="text-white hover:text-purple-400 transition-colors duration-200 flex items-center group"
+                                            >
+                                                <MapPin className="w-3 h-3 mr-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+                                                {location.tinhThanh}
+                                            </Link>
+                                        </li>
+                                    ))}
+                                </ul>
+                            )}
                         </div>
 
                         <div>
@@ -122,7 +138,7 @@ export default function Footer() {
                                         <Phone className="w-4 h-4" />
                                     </div>
                                     <p className="text-white text-sm">
-                                        +84 934 100 597
+                                       <a href="tel:0934100597">+84 934 100 597</a>
                                     </p>
                                 </div>
                                 
@@ -131,7 +147,7 @@ export default function Footer() {
                                         <Mail className="w-4 h-4" />
                                     </div>
                                     <p className="text-white text-sm">
-                                        tranphuoc1005@gmail.com
+                                        <a href="mailto:tranphuoc1005@gmail.com">tranphuoc1005@gmail.com</a>
                                     </p>
                                 </div>
                             </div>
@@ -146,15 +162,15 @@ export default function Footer() {
                                 © 2025 LaniBnb. Tất cả quyền được bảo lưu.
                             </p>
                             <div className="flex space-x-6 text-sm">
-                                <a href="#" className="text-white hover:text-white transition-colors duration-200">
+                                <Link to={"#"} className="text-white hover:text-white transition-colors duration-200">
                                     Chính sách bảo mật
-                                </a>
-                                <a href="#" className="text-white hover:text-white transition-colors duration-200">
+                                </Link>
+                                <Link to={"#"} className="text-white hover:text-white transition-colors duration-200">
                                     Điều khoản sử dụng
-                                </a>
-                                <a href="#" className="text-white hover:text-white transition-colors duration-200">
+                                </Link>
+                                <Link to={"#"} className="text-white hover:text-white transition-colors duration-200">
                                     Hỗ trợ
-                                </a>
+                                </Link>
                             </div>
                         </div>
                     </div>

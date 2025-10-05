@@ -2,21 +2,50 @@ import { MapPin, Shield, Clock, Star, Users, Award, Heart, Zap, CheckCircle, Sma
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import { getUserApi } from "@/services/user.api";
+import { listRoomApi } from "@/services/room.api";
+import { getCommentsApi } from "@/services/comment.api";
 
 export default function AboutUsSection() {
+    const { data: users } = useQuery({
+        queryKey: ['stats-users'],
+        queryFn: () => getUserApi(),
+        staleTime: 1000 * 60 * 5,
+    });
+
+    const { data: rooms } = useQuery({
+        queryKey: ['stats-rooms'],
+        queryFn: () => listRoomApi(1, 10000),
+        staleTime: 1000 * 60 * 5,
+    });
+
+    const { data: comments } = useQuery({
+        queryKey: ['stats-comments'],
+        queryFn: () => getCommentsApi(),
+        staleTime: 1000 * 60 * 5,
+    });
+
+    const totalCustomers = users?.length || 0;
+    const totalRooms = rooms?.data?.length || 0;
+    
+    const averageRating = (() => {
+        if (!comments || comments.length === 0) return "5.0";
+        const totalRating = comments.reduce((sum, comment) => sum + (comment.saoBinhLuan || 0), 0);
+        return (totalRating / comments.length).toFixed(1);
+    })();
+
     const features = [
         {
             icon: <MapPin className="w-6 h-6" />,
             title: "Đa dạng địa điểm",
-            description:
-                "Hơn 10,000+ khách sạn tại các điểm đến hot nhất Việt Nam",
+            description:"Hơn 10,000+ khách sạn tại các điểm đến hot nhất Việt Nam",
             color: "from-sky-300 to-blue-300",
         },
         {
             icon: <Shield className="w-6 h-6" />,
             title: "Đặt phòng an toàn",
-            description:
-                "Hệ thống bảo mật SSL 256-bit, đảm bảo thông tin 100% an toàn",
+            description:"Hệ thống bảo mật SSL 256-bit, đảm bảo thông tin 100% an toàn",
             color: "from-sky-300 to-blue-300",
         },
         {
@@ -28,25 +57,24 @@ export default function AboutUsSection() {
         {
             icon: <Star className="w-6 h-6" />,
             title: "Giá tốt nhất",
-            description:
-                "Cam kết giá tốt nhất thị trường, hoàn tiền nếu tìm được giá rẻ hơn",
+            description:"Cam kết giá tốt nhất thị trường, hoàn tiền nếu tìm được giá rẻ hơn",
             color: "from-sky-300 to-blue-300",
         },
     ];
 
     const stats = [
         {
-            number: "50K+",
+            number: totalCustomers > 0 ? `${totalCustomers.toLocaleString('vi-VN')}+` : "...",
             label: "Khách hàng tin tưởng",
             icon: <Users className="w-5 h-5" />,
         },
         {
-            number: "10K+",
+            number: totalRooms > 0 ? `${totalRooms.toLocaleString('vi-VN')}+` : "...",
             label: "Khách sạn đối tác",
             icon: <Award className="w-5 h-5" />,
         },
         {
-            number: "4.9/5",
+            number: `${averageRating}/5`,
             label: "Đánh giá trung bình",
             icon: <Star className="w-5 h-5" />,
         },
@@ -227,13 +255,13 @@ export default function AboutUsSection() {
                         <h3 className="text-2xl md:text-3xl font-bold text-white">
                             Sẵn sàng cho chuyến du lịch tiếp theo?
                         </h3>
-                        <p className="text-blue-100  max-w-2xl mx-auto">
+                        <p className="text-blue-100 max-w-2xl mx-auto">
                             Hàng ngàn khách sạn đang chờ đón bạn. Đặt phòng ngay
                             hôm nay và nhận ưu đãi đặc biệt!
                         </p>
                         <Link
                             to={"/rooms/"}
-                            className="w-full max-w-[300px] mx-auto bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-50 transition-colors duration-200 shadow-lg hover:shadow-xl"
+                            className="inline-block mt-4 w-full max-w-[300px] mx-auto bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-50 transition-colors duration-200 shadow-lg hover:shadow-xl"
                         >
                             Khám phá ngay
                         </Link>

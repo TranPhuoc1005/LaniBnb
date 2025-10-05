@@ -1,11 +1,23 @@
 import React, { useState, useCallback, useMemo } from "react";
-import { Star, Heart, MessageCircle, Send, Filter, Award, Calendar, Loader2, AlertTriangle } from "lucide-react";
+import {
+    Star,
+    Heart,
+    MessageCircle,
+    Send,
+    Filter,
+    Award,
+    Calendar,
+    Loader2,
+    AlertTriangle,
+} from "lucide-react";
 import { useAuthStore } from "@/store/auth.store";
 import type { CommentItem } from "@/interface/comment.interface";
 import { Link } from "react-router-dom";
-import { useListComments, useSubmitComment } from "@/hooks/useCommentQuery";
+import { useSubmitComment } from "@/hooks/useCommentQuery";
 import { useListUsers } from "@/hooks/useUserQuery";
 import { useDetailUserBooking } from "@/hooks/useBookingQuery";
+import { useListOfRoomComment } from "@/hooks/useCommentQuery";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface RoomDetailCommentsProps {
     maPhong: number;
@@ -19,12 +31,16 @@ export default function RoomDetailComments({
     const { user } = useAuthStore();
     const isAuthenticated = !!user;
 
-    const { data: comments = [] } = useListComments();
+    const { data: comments = [] } = useListOfRoomComment(maPhong);
 
     const { data: users = [] } = useListUsers();
 
-    const { data: bookings = [] } = useDetailUserBooking(isAuthenticated && user ? String(user.user.id) : "", { enabled: isAuthenticated && !!user });
+    const { data: bookings = [] } = useDetailUserBooking(
+        isAuthenticated && user ? String(user.user.id) : "",
+        { enabled: isAuthenticated && !!user }
+    );
 
+    const queryClient = useQueryClient();
     const createCommentMutation = useSubmitComment({
         onSuccess: () => {
             setCommentForm({
@@ -32,7 +48,10 @@ export default function RoomDetailComments({
                 saoBinhLuan: 5,
                 maPhong: maPhong,
             });
-        }
+            queryClient.invalidateQueries({
+                queryKey: ["list-of-room-comment", maPhong],
+            });
+        },
     });
 
     const [commentForm, setCommentForm] = useState({
@@ -46,18 +65,15 @@ export default function RoomDetailComments({
     );
     const [filterRating, setFilterRating] = useState<number | null>(null);
 
-    const roomComments: CommentItem[] = comments
-        .filter((comment) => comment.maPhong === maPhong)
-        .map((comment) => {
-            const userInfo = users.find(
-                (u) => u.id === comment.maNguoiBinhLuan
-            );
-            return {
-                ...comment,
-                tenNguoiBinhLuan: userInfo?.name || "Người dùng",
-                avatar: userInfo?.avatar || "",
-            };
-        });
+    const roomComments: CommentItem[] = comments.map((comment) => {
+        const userInfo = users.find((u) => u.name === comment.tenNguoiBinhLuan);
+        return {
+            ...comment,
+            maNguoiBinhLuan: userInfo?.id ??0,
+            tenNguoiBinhLuan: comment.tenNguoiBinhLuan || "Người dùng",
+            avatar: comment?.avatar || "",
+        };
+    });
 
     const hasBookedThisRoom = useMemo(() => {
         return isAuthenticated && user
@@ -70,12 +86,14 @@ export default function RoomDetailComments({
     }, [isAuthenticated, user, bookings, maPhong]);
 
     const hasAlreadyCommented = useMemo(() => {
-        return isAuthenticated && user
+        return isAuthenticated && user.user
             ? roomComments.some(
                   (comment) => comment.maNguoiBinhLuan === user.user.id
               )
             : false;
     }, [isAuthenticated, user, roomComments]);
+
+    console.log(roomComments);
 
     const handleLike = useCallback((id: number | string) => {
         setLikedReviews((prev) => {
@@ -182,6 +200,8 @@ export default function RoomDetailComments({
                 : 0,
     }));
 
+    console.log(window.getComputedStyle(document.body).overflow)
+
     return (
         <div
             id="reviews"
@@ -256,10 +276,10 @@ export default function RoomDetailComments({
                     </div>
                 )}
 
-                {canComment &&
-                    isAuthenticated &&
+                {isAuthenticated &&
                     hasBookedThisRoom &&
-                    !hasAlreadyCommented && (
+                    !hasAlreadyCommented &&
+                    canComment && (
                         <div className="mb-6 p-4 bg-gray-50 rounded-lg border">
                             <h4 className="font-semibold text-gray-900 mb-4">
                                 Chia sẻ trải nghiệm của bạn
@@ -268,7 +288,9 @@ export default function RoomDetailComments({
                             {createCommentMutation.isError && (
                                 <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
                                     <p className="text-red-600 text-sm">
-                                        {(createCommentMutation.error as any)?.response?.data?.content || "Gửi đánh giá thất bại"}
+                                        {(createCommentMutation.error as any)
+                                            ?.response?.data?.content ||
+                                            "Gửi đánh giá thất bại"}
                                     </p>
                                 </div>
                             )}
@@ -429,7 +451,7 @@ export default function RoomDetailComments({
                             </div>
                         </div>
 
-                        <div className="lg:col-span-2 max-h-[735px] overflow-y-auto">
+                        <div className="lg:col-span-2 max-h-[735px] overflow-y-auto overscroll-y-auto">
                             <div className="space-y-4">
                                 {filteredReviews
                                     .sort(
@@ -536,7 +558,8 @@ export default function RoomDetailComments({
                             Chưa có đánh giá nào
                         </h3>
                         <p className="text-gray-600 mb-4">
-                            Hãy là người đầu tiên chia sẻ trải nghiệm về phòng này!
+                            Hãy là người đầu tiên chia sẻ trải nghiệm về phòng
+                            này!
                         </p>
                     </div>
                 )}
