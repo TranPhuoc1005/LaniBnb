@@ -90,12 +90,10 @@ export default function UserProfilePage() {
         if (!currentUser || !userId) return;
 
         try {
-            let avatarUrl = currentUser.avatar;
             if (avatarFile) {
                 const formData = new FormData();
                 formData.append("formFile", avatarFile);
-                const uploadResult = await updateUserImageMutation.mutateAsync(formData);
-                if (uploadResult?.avatar) avatarUrl = uploadResult.avatar;
+                await updateUserImageMutation.mutateAsync(formData);
             }
 
             const updateData: UserPutResponse = {
